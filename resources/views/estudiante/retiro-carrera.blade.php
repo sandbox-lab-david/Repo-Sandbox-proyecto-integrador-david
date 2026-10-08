@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Examen de recuperación | Portal del estudiante</title>
+    <title>Retiro de carrera | Portal del estudiante</title>
 
     <style>
         * { box-sizing: border-box; }
@@ -86,21 +86,6 @@
             .seccion { padding: 20px; }
             .acciones { flex-direction: column; }
         }
-
-        .boton-iniciar {
-            display: inline-block;
-            padding: 13px 18px;
-            border-radius: 8px;
-            background: #781c35;
-            color: white;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .boton-iniciar:hover {
-            background: #5d1529;
-        }
-
     </style>
 </head>
 <body>
@@ -112,72 +97,113 @@
         </a>
 
         <div>
-            <span class="categoria">Evaluaciones</span>
-            <h1>Examen de recuperación</h1>
+            <span class="categoria">Retiros y continuidad</span>
+
+            <h1>Retiro de carrera</h1>
+
             <p>
-                Examen de recuperación para una asignatura reprobada.
-                Revisa las condiciones antes de iniciar tu solicitud.
+                Solicita formalmente el retiro de tu carrera actual.
+                Revisa las condiciones académicas y económicas
+                antes de iniciar tu solicitud.
             </p>
         </div>
 
         <section class="seccion">
             <h2>Requisitos</h2>
+
             <ul>
-                <li>La materia debe constar como reprobada.</li>
-                <li>No debe existir un registro de fraude académico en esa materia.</li>
-                <li>El GPA aplicable debe ser de al menos 75 sobre 100.</li>
-                <li>No haber rendido un examen de recuperación en los últimos 365 días.</li>
-                <li>Seleccionar una sola materia por solicitud.</li>
+                <li>
+                    Indicar el motivo del retiro de carrera.
+                    Este campo es obligatorio.
+                </li>
+                <li>
+                    Presentar la solicitud mediante el formulario
+                    institucional y los canales establecidos
+                    por la facultad.
+                </li>
             </ul>
+
+            <p>
+                Los requisitos adicionales deben confirmarse
+                con la facultad.
+            </p>
         </section>
 
         <section class="seccion">
-            <h2>Documento de respaldo</h2>
+            <h2>Documentos de respaldo</h2>
+
             <p>
-                Registro de calificaciones o evidencia de la materia reprobada.
+                Los documentos de respaldo específicos para este
+                trámite están pendientes de confirmación
+                por la facultad.
             </p>
         </section>
 
         <section class="seccion">
             <h2>Plazo indicado</h2>
+
             <p>
-                Se solicita al finalizar el semestre. El examen se rinde
-                hasta la primera semana del periodo siguiente.
+                El plazo para presentar la solicitud está pendiente
+                de confirmación por la facultad.
+            </p>
+        </section>
+
+        <section class="seccion">
+            <h2>Condiciones económicas</h2>
+
+            <p>
+                El retiro académico no elimina automáticamente
+                los valores pendientes con la universidad.
+                Consulta los pagos aplicables y las opciones de
+                regularización según el calendario financiero.
             </p>
         </section>
 
         <section class="seccion aviso">
-            <h2>Condición pendiente de confirmación</h2>
+            <h2>Información pendiente de confirmación</h2>
+
             <p>
-                Por ahora, selecciona una sola materia por solicitud. Esta condición está pendiente de confirmación por la facultad.
+                Antes de solicitar el retiro, confirma con la facultad
+                si corresponde un retiro temporal o definitivo
+                y cuáles serán sus efectos académicos.
             </p>
+
             <p>
-                Esta ficha es informativa y no representa una aprobación
-                de elegibilidad.
+                Si planeas retomar tus estudios, consulta las condiciones
+                y el plazo de reincorporación, así como el plan de
+                estudios que se aplicaría.
+            </p>
+
+            <p>
+                Este trámite requiere revisión de la facultad.
+                Esta ficha es informativa y no representa una
+                aprobación de elegibilidad.
             </p>
         </section>
 
         <section class="seccion">
             <h2>¿Qué sigue?</h2>
+
             <p>
-                Completarás el formulario, adjuntarás los respaldos y
-                descargarás el documento oficial. Después deberás firmarlo
-                y subir el PDF firmado para enviar la solicitud.
+                Completarás el formulario indicando el motivo del retiro.
+                Adjuntarás los respaldos que se requieran y descargarás
+                el documento oficial. Después deberás firmarlo y
+                subir el PDF firmado para enviar la solicitud.
             </p>
 
             <div class="acciones">
-                <a
-                    class="boton-iniciar"
-                    href="{{ route('estudiante.solicitudes.recuperacion.crear') }}"
-                >
+                <button type="button" disabled>
                     Iniciar solicitud
-                </a>
-                <button type="button" disabled>Consultar chatbot</button>
+                </button>
+
+                <button type="button" disabled>
+                    Consultar chatbot
+                </button>
             </div>
 
             <p class="nota">
-                Puedes consultar el primer paso del formulario de demostración.
-                La conexión con el chatbot estará disponible en una siguiente entrega.
+                El formulario de este trámite y la conexión con el
+                chatbot estarán disponibles en una siguiente entrega.
             </p>
         </section>
     </main>

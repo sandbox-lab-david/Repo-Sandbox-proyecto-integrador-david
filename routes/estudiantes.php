@@ -39,3 +39,28 @@ Route::view(
     '/estudiante/tramites/homologacion',
     'estudiante.homologacion'
 )->name('estudiante.tramites.homologacion');
+
+Route::view(
+    '/estudiante/solicitudes/recuperacion/nueva',
+    'estudiante.formulario-recuperacion'
+)->name('estudiante.solicitudes.recuperacion.crear');
+
+Route::view(
+    '/estudiante/acceso',
+    'estudiante.login'
+)->name('estudiante.acceso');
+
+Route::view(
+    '/estudiante/tramites/retiro-materia',
+    'estudiante.retiro-materia'
+)->name('estudiante.tramites.retiro-materia');
+
+Route::view(
+    '/estudiante/tramites/retiro-carrera',
+    'estudiante.retiro-carrera'
+)->name('estudiante.tramites.retiro-carrera');
+
+Route::view(
+    '/estudiante/tramites/retiro-universidad',
+    'estudiante.retiro-universidad'
+)->name('estudiante.tramites.retiro-universidad');

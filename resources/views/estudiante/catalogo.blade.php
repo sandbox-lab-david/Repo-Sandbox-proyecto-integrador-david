@@ -17,15 +17,6 @@
             color: #202939;
         }
 
-        header {
-            background: #781c35;
-            color: white;
-            padding: 22px 24px;
-        }
-
-        header strong {
-            font-size: 20px;
-        }
 
         main {
             max-width: 1100px;
@@ -237,12 +228,125 @@
                 transform: none;
             }
         }
+
+            .marca-portal {
+                max-width: 1150px;
+                margin: auto;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .logo-uees {
+                display: block;
+                width: 170px;
+                height: auto;
+                padding: 6px;
+                background: white;
+                border-radius: 8px;
+            }
+
+            .marca-portal strong {
+                font-size: 20px;
+                line-height: 1.3;
+            }
+
+            @media (max-width: 600px) {
+
+               
+
+                .marca-portal strong {
+                    font-size: 16px;
+                }
+            }
+
+            header.encabezado-portal {
+                background: white;
+                color: #202939;
+                padding: 18px 24px;
+                border-top: 5px solid #781c35;
+                border-bottom: 1px solid #e0e4eb;
+                box-shadow: 0 3px 12px rgba(32, 41, 57, 0.04);
+            }
+
+            .marca-portal {
+                max-width: 1052px;
+                margin: auto;
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+
+            .logo-uees {
+                display: block;
+                width: 150px;
+                height: auto;
+                flex-shrink: 0;
+            }
+
+            .titulo-portal {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                border-left: 1px solid #e0e4eb;
+                padding-left: 24px;
+            }
+
+            .titulo-portal strong {
+                color: #781c35;
+                font-size: 21px;
+                line-height: 1.3;
+            }
+
+            .titulo-portal span {
+                color: #596579;
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            @media (max-width: 600px) {
+                header.encabezado-portal {
+                    padding: 16px;
+                }
+
+                .marca-portal {
+                    gap: 14px;
+                }
+
+                .logo-uees {
+                    width: 105px;
+                }
+
+                .titulo-portal {
+                    padding-left: 14px;
+                }
+
+                .titulo-portal strong {
+                    font-size: 17px;
+                }
+
+                .titulo-portal span {
+                    font-size: 12px;
+                }
+            }
+
     </style>
 </head>
 <body>
-    <header>
-        <strong>Portal del estudiante</strong>
-    </header>
+    <header class="encabezado-portal">
+    <div class="marca-portal">
+        <img
+            class="logo-uees"
+            src="{{ asset('images/estudiante/Logo-UEES.gif') }}"
+            alt="Universidad Espíritu Santo — UEES"
+        >
+
+        <div class="titulo-portal">
+            <strong>Portal del estudiante</strong>
+            <span>Tus solicitudes académicas, en un solo lugar</span>
+        </div>
+    </div>
+</header>
 
     <main>
         <h1>Trámites estudiantiles</h1>
@@ -313,6 +417,15 @@
                 "{{ route('estudiante.tramites.supletorio') }}",
             'Homologación':
                 "{{ route('estudiante.tramites.homologacion') }}",
+
+            'Retiro de materia':
+                "{{ route('estudiante.tramites.retiro-materia') }}",
+
+            'Retiro de carrera':
+                "{{ route('estudiante.tramites.retiro-carrera') }}",
+
+            'Retiro de universidad':
+                "{{ route('estudiante.tramites.retiro-universidad') }}",
         };
 
         const tramites = [
