@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Estudiante\SolicitudController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/estudiante/tramites', 'estudiante.catalogo')
@@ -114,3 +115,8 @@ Route::view(
     '/estudiante/tramites/registro-extemporaneo',
     'estudiante.registro-extemporaneo'
 )->name('estudiante.tramites.registro-extemporaneo');
+
+Route::get(
+    '/estudiante/solicitudes/nueva',
+    [SolicitudController::class, 'create']
+)->name('solicitudes.create');
