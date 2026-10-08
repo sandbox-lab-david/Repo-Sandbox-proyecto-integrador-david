@@ -297,6 +297,24 @@
     </main>
 
     <script>
+
+        const fichas = {
+            'Examen de recuperación':
+                "{{ route('estudiante.tramites.recuperacion') }}",
+            'Examen de gracia':
+                "{{ route('estudiante.tramites.gracia') }}",
+            'Ayudante de cátedra':
+                "{{ route('estudiante.tramites.ayudante') }}",
+            'Tercer registro':
+                "{{ route('estudiante.tramites.tercer-registro') }}",
+            'Recalificación de examen':
+                "{{ route('estudiante.tramites.recalificacion') }}",
+            'Examen supletorio':
+                "{{ route('estudiante.tramites.supletorio') }}",
+            'Homologación':
+                "{{ route('estudiante.tramites.homologacion') }}",
+        };
+
         const tramites = [
             { nombre: 'Alcance de homologación', categoria: 'Homologación' },
             { nombre: 'Ayudante de cátedra', categoria: 'Apoyo académico' },
@@ -363,8 +381,7 @@
                 descripcion.textContent =
                     'Consulta los requisitos y documentos antes de iniciar este trámite.';
 
-                const tieneFicha =
-                    tramite.nombre === 'Examen de recuperación';
+                const tieneFicha = Object.hasOwn(fichas, tramite.nombre);
 
                 const acciones = document.createElement('div');
                 acciones.className = 'acciones';
@@ -376,8 +393,7 @@
                 boton.textContent = 'Ver requisitos';
 
                 if (tieneFicha) {
-                    boton.href =
-                        "{{ route('estudiante.tramites.recuperacion') }}";
+                    boton.href = fichas[tramite.nombre];
                     boton.className = 'enlace-ficha';
                 } else {
                     boton.type = 'button';
