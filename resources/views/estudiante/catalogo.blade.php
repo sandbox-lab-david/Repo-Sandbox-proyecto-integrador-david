@@ -330,6 +330,269 @@
                 }
             }
 
+                .portada-catalogo {
+                    padding: 30px;
+                    margin-bottom: 22px;
+                    border: 1px solid #eadce1;
+                    border-radius: 18px;
+                    background: linear-gradient(120deg, #fbf2f5, #ffffff);
+                }
+
+                .portada-etiqueta {
+                    display: block;
+                    margin-bottom: 12px;
+                    color: #781c35;
+                    font-size: 11px;
+                    font-weight: bold;
+                    letter-spacing: 1.5px;
+                }
+
+                .portada-catalogo h1 {
+                    margin: 0 0 12px;
+                    max-width: 650px;
+                    color: #202939;
+                    font-size: 30px;
+                    line-height: 1.25;
+                }
+
+                .portada-catalogo p {
+                    max-width: 650px;
+                    margin: 0;
+                    color: #596579;
+                    font-size: 15px;
+                    line-height: 1.6;
+                }
+
+                .estado-catalogo {
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 7px 12px;
+                    border-radius: 20px;
+                    background: #f1e5ea;
+                    color: #781c35;
+                    font-size: 12px;
+                    line-height: 1.5;
+                }
+
+                .filtros-catalogo {
+                    padding: 22px;
+                    background: white;
+                    border: 1px solid #e0e4eb;
+                    border-radius: 14px;
+                }
+
+                .filtros-catalogo .controles {
+                    margin: 0;
+                    gap: 18px;
+                }
+
+                .filtros-catalogo label {
+                    font-size: 13px;
+                    margin-bottom: 9px;
+                }
+
+                .filtros-catalogo input,
+                .filtros-catalogo select {
+                    min-height: 46px;
+                    padding: 12px 14px;
+                    background: #fafbfc;
+                    font-size: 14px;
+                }
+
+                .resultado {
+                    margin: 20px 0 16px;
+                    font-size: 13px;
+                }
+
+                @media (max-width: 600px) {
+                    .portada-catalogo {
+                        padding: 24px 20px;
+                    }
+
+                    .portada-catalogo h1 {
+                        font-size: 25px;
+                    }
+
+                    .filtros-catalogo {
+                        padding: 20px;
+                    }
+                }
+
+                /* Diseño de las tarjetas del catálogo */
+                #tarjetas {
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    gap: 18px;
+                }
+
+                #tarjetas .tarjeta {
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 210px;
+                    padding: 24px;
+                    background: #fff;
+                    border: 1px solid #e5e7ed;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 16px rgba(32, 41, 57, 0.035);
+                    transition: transform 180ms ease, box-shadow 180ms ease,
+                                border-color 180ms ease;
+                }
+
+                #tarjetas .tarjeta:hover {
+                    transform: translateY(-3px);
+                    border-color: #d9b2bd;
+                    box-shadow: 0 10px 24px rgba(120, 28, 53, 0.08);
+                }
+
+                #tarjetas .cabecera-tarjeta {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 18px;
+                }
+
+                #tarjetas .icono-tramite {
+                    display: grid;
+                    place-items: center;
+                    flex-shrink: 0;
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 12px;
+                    background: #f7edf0;
+                    color: #781c35;
+                }
+
+                #tarjetas .icono-tramite svg {
+                    width: 23px;
+                    height: 23px;
+                }
+
+                #tarjetas .categoria {
+                    margin: 0;
+                    padding: 0;
+                    border-radius: 0;
+                    background: transparent;
+                    color: #697386;
+                    font-size: 12px;
+                    font-weight: 600;
+                    line-height: 1.5;
+                }
+
+                #tarjetas .tarjeta h2 {
+                    margin: 0 0 20px;
+                    color: #202939;
+                    font-size: 20px;
+                    line-height: 1.4;
+                }
+
+                #tarjetas .acciones {
+                    display: flex;
+                    margin-top: auto;
+                    padding-top: 16px;
+                    border-top: 1px solid #eef0f4;
+                }
+
+                #tarjetas .enlace-ficha,
+                #tarjetas .acciones button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    width: 100%;
+                    margin: 0;
+                    padding: 0;
+                    border: 0;
+                    border-radius: 0;
+                    background: transparent;
+                    color: #781c35;
+                    font: inherit;
+                    font-size: 14px;
+                    font-weight: bold;
+                    text-align: left;
+                    text-decoration: none;
+                    box-shadow: none;
+                }
+
+                #tarjetas .enlace-ficha:hover {
+                    background: transparent;
+                    color: #541426;
+                }
+
+                #tarjetas .enlace-ficha:focus-visible {
+                    outline: 3px solid #d9b2bd;
+                    outline-offset: 6px;
+                    border-radius: 4px;
+                }
+
+                #tarjetas .flecha-enlace {
+                    font-size: 22px;
+                    transition: transform 180ms ease;
+                }
+
+                #tarjetas .enlace-ficha:hover .flecha-enlace {
+                    transform: translateX(4px);
+                }
+
+                #tarjetas .acciones button:disabled {
+                    color: #8a93a2;
+                    cursor: default;
+                }
+
+                @media (max-width: 950px) {
+                    #tarjetas {
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                    }
+                }
+
+                @media (max-width: 600px) {
+                    #tarjetas {
+                        grid-template-columns: 1fr;
+                        gap: 14px;
+                    }
+
+                    #tarjetas .tarjeta {
+                        min-height: 185px;
+                        padding: 20px;
+                    }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    #tarjetas .tarjeta,
+                    #tarjetas .flecha-enlace {
+                        transition: none;
+                    }
+
+                    #tarjetas .tarjeta:hover,
+                    #tarjetas .enlace-ficha:hover .flecha-enlace {
+                        transform: none;
+                    }
+                }
+
+                #tarjetas .enlace-ficha {
+                    width: fit-content;
+                    justify-content: center;
+                    gap: 14px;
+                    padding: 12px 18px;
+                    border: 1px solid #781c35;
+                    border-radius: 10px;
+                    background: #781c35;
+                    color: white;
+                    font-size: 14px;
+                    font-weight: bold;
+                    text-decoration: none;
+                }
+
+                #tarjetas .enlace-ficha:hover {
+                    background: #5d1529;
+                    border-color: #5d1529;
+                    color: white;
+                }
+
+                #tarjetas .enlace-ficha .flecha-enlace {
+                    font-size: 18px;
+                }
+
+
     </style>
 </head>
 <body>
@@ -349,40 +612,46 @@
 </header>
 
     <main>
-        <h1>Trámites estudiantiles</h1>
+       <section class="portada-catalogo">
+            <span class="portada-etiqueta">GESTIONES ACADÉMICAS</span>
 
-        <p class="introduccion">
-            Encuentra el trámite que necesitas y consulta sus requisitos
-            antes de iniciar una solicitud.
-        </p>
+            <h1>¿Qué trámite necesitas realizar?</h1>
 
-        <div class="aviso">
-            Catálogo de demostración. Puedes consultar la ficha de
-            Examen de recuperación. Las demás fichas y el envío de
-            solicitudes estarán disponibles proximamente.
-        </div>
+            <p>
+                Explora las opciones y revisa los requisitos
+                antes de preparar tu solicitud.
+            </p>
 
-        <section class="controles" aria-label="Buscar y filtrar trámites">
-            <div>
-                <label for="busqueda">Buscar trámite</label>
-                <input
-                    id="busqueda"
-                    type="search"
-                    placeholder="Ejemplo: recuperación, retiro, homologación"
-                >
-            </div>
+            <span class="estado-catalogo">
+                Formularios y envío de solicitudes en desarrollo
+            </span>
+        </section>
 
-            <div>
-                <label for="categoria">Categoría</label>
-                <select id="categoria">
-                    <option value="">Todas las categorías</option>
-                    <option>Homologación</option>
-                    <option>Apoyo académico</option>
-                    <option>Cambios académicos</option>
-                    <option>Evaluaciones</option>
-                    <option>Registro</option>
-                    <option>Retiros y continuidad</option>
-                </select>
+        <section class="filtros-catalogo" aria-label="Buscar y filtrar trámites">
+            <div class="controles">
+                <div>
+                    <label for="busqueda">Buscar un trámite</label>
+
+                    <input
+                        id="busqueda"
+                        type="search"
+                        placeholder="Escribe el nombre del trámite…"
+                    >
+                </div>
+
+                <div>
+                    <label for="categoria">Filtrar por categoría</label>
+
+                    <select id="categoria">
+                        <option value="">Todas las categorías</option>
+                        <option>Homologación</option>
+                        <option>Apoyo académico</option>
+                        <option>Cambios académicos</option>
+                        <option>Evaluaciones</option>
+                        <option>Registro</option>
+                        <option>Retiros y continuidad</option>
+                    </select>
+                </div>
             </div>
         </section>
 
@@ -426,6 +695,26 @@
 
             'Retiro de universidad':
                 "{{ route('estudiante.tramites.retiro-universidad') }}",
+            'Retiro extemporáneo':
+                "{{ route('estudiante.tramites.retiro-extemporaneo') }}",
+            'Cambio de carrera':
+                "{{ route('estudiante.tramites.cambio-carrera') }}",
+            'Cambio de modalidad':
+                "{{ route('estudiante.tramites.cambio-modalidad') }}",
+            'Cambio de malla / pénsum':
+                "{{ route('estudiante.tramites.cambio-malla') }}",
+            'Reincorporación a carrera':
+                "{{ route('estudiante.tramites.reincorporacion') }}",
+            'Examen de suficiencia':
+                "{{ route('estudiante.tramites.suficiencia') }}",
+            'Incompleto':
+                "{{ route('estudiante.tramites.incompleto') }}",
+            'Person to Person':
+                "{{ route('estudiante.tramites.person-to-person') }}",
+            'Alcance de homologación':
+                "{{ route('estudiante.tramites.alcance-homologacion') }}",
+            'Registro extemporáneo':
+                "{{ route('estudiante.tramites.registro-extemporaneo') }}",
         };
 
         const tramites = [
@@ -465,6 +754,57 @@
                 .trim();
         }
 
+               function crearIcono(categoriaTramite) {
+            const dibujos = {
+                'Homologación': `
+                    <rect x="5" y="3" width="14" height="18" rx="2"/>
+                    <path d="M9 8h6M9 12h6M9 16h3"/>
+                `,
+                'Apoyo académico': `
+                    <circle cx="9" cy="8" r="3"/>
+                    <path d="M3 20v-2a6 6 0 0 1 12 0v2"/>
+                    <path d="M17 5a3 3 0 0 1 0 6M21 20v-2a6 6 0 0 0-4-5"/>
+                `,
+                'Cambios académicos': `
+                    <path d="M4 7h15M15 3l4 4-4 4"/>
+                    <path d="M20 17H5M9 13l-4 4 4 4"/>
+                `,
+                'Evaluaciones': `
+                    <rect x="5" y="4" width="14" height="17" rx="2"/>
+                    <path d="M9 4V2h6v2M9 10h6M9 15l2 2 4-4"/>
+                `,
+                'Retiros y continuidad': `
+                    <path d="M10 4H5v16h5M10 12h11M17 8l4 4-4 4"/>
+                `,
+                'Registro': `
+                    <rect x="4" y="5" width="16" height="16" rx="2"/>
+                    <path d="M8 3v4M16 3v4M4 10h16M9 15h6M12 12v6"/>
+                `,
+            };
+
+            const contenedor = document.createElement('span');
+            contenedor.className = 'icono-tramite';
+            contenedor.setAttribute('aria-hidden', 'true');
+
+            // Los dibujos son fijos y no contienen datos ingresados por usuarios.
+            contenedor.innerHTML = `
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    focusable="false"
+                >
+                    ${dibujos[categoriaTramite] || dibujos['Homologación']}
+                </svg>
+            `;
+
+            return contenedor;
+        }
+
         function mostrarTramites() {
             const texto = normalizar(busqueda.value);
 
@@ -482,45 +822,58 @@
                 const tarjeta = document.createElement('article');
                 tarjeta.className = 'tarjeta';
 
+                const cabecera = document.createElement('div');
+                cabecera.className = 'cabecera-tarjeta';
+
                 const etiqueta = document.createElement('span');
                 etiqueta.className = 'categoria';
                 etiqueta.textContent = tramite.categoria;
 
+                cabecera.append(
+                    crearIcono(tramite.categoria),
+                    etiqueta
+                );
+
                 const titulo = document.createElement('h2');
                 titulo.textContent = tramite.nombre;
-
-                const descripcion = document.createElement('p');
-                descripcion.className = 'descripcion';
-                descripcion.textContent =
-                    'Consulta los requisitos y documentos antes de iniciar este trámite.';
 
                 const tieneFicha = Object.hasOwn(fichas, tramite.nombre);
 
                 const acciones = document.createElement('div');
                 acciones.className = 'acciones';
 
-                const boton = document.createElement(
+                const enlace = document.createElement(
                     tieneFicha ? 'a' : 'button'
                 );
 
-                boton.textContent = 'Ver requisitos';
+                const textoEnlace = document.createElement('span');
+                textoEnlace.textContent = tieneFicha
+                    ? 'Consultar requisitos'
+                    : 'Disponible próximamente';
+
+                enlace.append(textoEnlace);
 
                 if (tieneFicha) {
-                    boton.href = fichas[tramite.nombre];
-                    boton.className = 'enlace-ficha';
+                    enlace.href = fichas[tramite.nombre];
+                    enlace.className = 'enlace-ficha';
+                    enlace.setAttribute(
+                        'aria-label',
+                        `Consultar requisitos de ${tramite.nombre}`
+                    );
+
+                    const flecha = document.createElement('span');
+                    flecha.className = 'flecha-enlace';
+                    flecha.textContent = '→';
+                    flecha.setAttribute('aria-hidden', 'true');
+
+                    enlace.append(flecha);
                 } else {
-                    boton.type = 'button';
-                    boton.disabled = true;
+                    enlace.type = 'button';
+                    enlace.disabled = true;
                 }
 
-                const pendiente = document.createElement('p');
-                pendiente.className = 'pendiente';
-                pendiente.textContent = tieneFicha
-                    ? 'Ficha disponible'
-                    : 'Ficha disponible próximamente';
-
-                acciones.append(boton, pendiente);
-                tarjeta.append(etiqueta, titulo, descripcion, acciones);
+                acciones.append(enlace);
+                tarjeta.append(cabecera, titulo, acciones);
                 tarjetas.append(tarjeta);
             });
 

@@ -64,3 +64,53 @@ Route::view(
     '/estudiante/tramites/retiro-universidad',
     'estudiante.retiro-universidad'
 )->name('estudiante.tramites.retiro-universidad');
+
+Route::view(
+    '/estudiante/tramites/retiro-extemporaneo',
+    'estudiante.retiro-extemporaneo'
+)->name('estudiante.tramites.retiro-extemporaneo');
+
+Route::view(
+    '/estudiante/tramites/cambio-carrera',
+    'estudiante.cambio-carrera'
+)->name('estudiante.tramites.cambio-carrera');
+
+Route::view(
+    '/estudiante/tramites/cambio-modalidad',
+    'estudiante.cambio-modalidad'
+)->name('estudiante.tramites.cambio-modalidad');
+
+Route::view(
+    '/estudiante/tramites/cambio-malla',
+    'estudiante.cambio-malla'
+)->name('estudiante.tramites.cambio-malla');
+
+Route::view(
+    '/estudiante/tramites/reincorporacion',
+    'estudiante.reincorporacion'
+)->name('estudiante.tramites.reincorporacion');
+
+Route::view(
+    '/estudiante/tramites/examen-suficiencia',
+    'estudiante.suficiencia'
+)->name('estudiante.tramites.suficiencia');
+
+Route::view(
+    '/estudiante/tramites/incompleto',
+    'estudiante.incompleto'
+)->name('estudiante.tramites.incompleto');
+
+Route::view(
+    '/estudiante/tramites/person-to-person',
+    'estudiante.person-to-person'
+)->name('estudiante.tramites.person-to-person');
+
+Route::view(
+    '/estudiante/tramites/alcance-homologacion',
+    'estudiante.alcance-homologacion'
+)->name('estudiante.tramites.alcance-homologacion');
+
+Route::view(
+    '/estudiante/tramites/registro-extemporaneo',
+    'estudiante.registro-extemporaneo'
+)->name('estudiante.tramites.registro-extemporaneo');

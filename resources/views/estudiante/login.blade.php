@@ -6,7 +6,9 @@
     <title>Iniciar sesión | Portal del estudiante</title>
 
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -56,9 +58,18 @@
             margin: 24px 0 16px;
         }
 
-        p, li { line-height: 1.7; }
-        .bienvenida ul { padding-left: 20px; }
-        .bienvenida li + li { margin-top: 12px; }
+        p,
+        li {
+            line-height: 1.7;
+        }
+
+        .bienvenida ul {
+            padding-left: 20px;
+        }
+
+        .bienvenida li + li {
+            margin-top: 12px;
+        }
 
         .panel {
             padding: 40px;
@@ -82,7 +93,9 @@
             margin-bottom: 8px;
         }
 
-        .campo { margin-bottom: 22px; }
+        .campo {
+            margin-bottom: 22px;
+        }
 
         input {
             width: 100%;
@@ -117,7 +130,9 @@
             cursor: pointer;
         }
 
-        button:hover { background: #5d1529; }
+        button:hover {
+            background: #5d1529;
+        }
 
         .aviso {
             background: #fff3d6;
@@ -135,10 +150,22 @@
         }
 
         @media (max-width: 750px) {
-            .contenedor { grid-template-columns: 1fr; }
-            main { padding: 24px 16px; }
-            .bienvenida, .panel { padding: 28px; }
-            .bienvenida h1 { font-size: 28px; }
+            .contenedor {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 24px 16px;
+            }
+
+            .bienvenida,
+            .panel {
+                padding: 28px;
+            }
+
+            .bienvenida h1 {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
@@ -174,6 +201,7 @@
                 <form id="formulario-login">
                     <div class="campo">
                         <label for="correo">Correo institucional</label>
+
                         <input
                             id="correo"
                             type="email"
@@ -182,6 +210,7 @@
                             required
                             aria-describedby="ayuda-correo"
                         >
+
                         <p id="ayuda-correo" class="ayuda">
                             Utiliza tu correo con dominio @uees.edu.ec.
                         </p>
@@ -189,6 +218,7 @@
 
                     <div class="campo">
                         <label for="contrasena">Contraseña</label>
+
                         <input
                             id="contrasena"
                             type="password"
@@ -222,7 +252,7 @@
             mensaje.textContent = '';
         });
 
-        formulario.addEventListener('submit', (evento) => {
+        formulario.addEventListener('submit', evento => {
             evento.preventDefault();
 
             const dominio = correo.value.trim().split('@')[1];
@@ -231,6 +261,7 @@
                 correo.setCustomValidity(
                     'Ingresa un correo institucional con dominio @uees.edu.ec.'
                 );
+
                 correo.reportValidity();
                 return;
             }

@@ -17,11 +17,30 @@
         }
 
         header {
-            background: #781c35;
-            color: white;
-            padding: 22px 24px;
+            background: white;
+            border-top: 4px solid #781c35;
+            border-bottom: 1px solid #e0e4eb;
+        }
+
+        .marca {
+            max-width: 1150px;
+            margin: auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .logo {
+            width: 145px;
+            height: auto;
+        }
+
+        .marca strong {
+            padding-left: 22px;
+            border-left: 1px solid #e0e4eb;
+            color: #781c35;
             font-size: 20px;
-            font-weight: bold;
         }
 
         main {
@@ -146,7 +165,7 @@
             display: flex;
             align-items: flex-start;
             gap: 10px;
-            margin-top: 28px;
+            margin-top: 22px;
             font-weight: normal;
             line-height: 1.6;
         }
@@ -237,6 +256,9 @@
 
         @media (max-width: 600px) {
             main { padding: 24px 16px; }
+            .marca { padding: 14px 16px; gap: 14px; }
+            .logo { width: 105px; }
+            .marca strong { padding-left: 14px; font-size: 16px; }
             h1 { font-size: 26px; }
             .panel { padding: 22px; }
             .campos, dl { grid-template-columns: 1fr; }
@@ -253,7 +275,16 @@
     </style>
 </head>
 <body>
-    <header>Portal del estudiante</header>
+    <header>
+        <div class="marca">
+            <img
+                class="logo"
+                src="{{ asset('images/estudiante/Logo-UEES.gif') }}"
+                alt="Universidad Espíritu Santo"
+            >
+            <strong>Portal del estudiante</strong>
+        </div>
+    </header>
 
     <main>
         <a href="{{ route('estudiante.tramites.recuperacion') }}">
@@ -263,11 +294,11 @@
         <h1>Solicitud de examen de recuperación</h1>
 
         <p class="introduccion">
-            Confirma tus datos y selecciona la materia de tu solicitud.
+            Confirma tus datos y completa la información de tu solicitud.
         </p>
 
         <div class="aviso">
-            Vista de demostración con datos académicos ficticios.
+            Vista de demostración con un perfil y materias ficticias.
             Usa datos de prueba. La solicitud todavía no se guarda ni se envía;
             al recargar la página se perderá lo escrito.
         </div>
@@ -293,9 +324,10 @@
                     <h2 id="titulo-datos" tabindex="-1">Primero, tus datos</h2>
 
                     <p class="introduccion">
-                        Completa los campos de prueba y confirma tus datos.
-                        En la versión final, el perfil académico se obtendrá
-                        del módulo 1.
+                        Revisa tu información personal y de carrera.
+                        Si encuentras un error, solicita su actualización
+                        a la unidad académica correspondiente.
+                        Puedes completar tu celular de contacto.
                     </p>
 
                     <form id="formulario-datos">
@@ -303,43 +335,26 @@
                             <div class="campo completo">
                                 <label for="nombre">Nombres y apellidos</label>
                                 <input id="nombre" type="text"
-                                    placeholder="Ingresa tus nombres y apellidos"
-                                    autocomplete="name" required maxlength="150">
+                                    value="Estudiante de demostración" readonly>
                             </div>
 
                             <div class="campo">
                                 <label for="codigo">Código estudiantil</label>
                                 <input id="codigo" type="text"
-                                    placeholder="Ej. 2026000001"
-                                    inputmode="numeric" maxlength="10"
-                                    pattern="[0-9]{10}"
-                                    title="Ingresa un código de 10 dígitos."
-                                    required>
-                                <p class="ayuda">
-                                    Para esta demostración usamos 10 dígitos.
-                                </p>
+                                    value="2026000001" readonly>
                             </div>
 
                             <div class="campo">
-                                <label for="cedula">Cédula</label>
+                                <label for="cedula">Cédula o pasaporte</label>
                                 <input id="cedula" type="text"
                                     placeholder="No disponible en el perfil de prueba"
                                     readonly>
-                                <p class="ayuda">
-                                    Este dato es obligatorio en homologación.
-                                </p>
                             </div>
 
                             <div class="campo">
                                 <label for="facultad">Facultad</label>
                                 <input id="facultad" type="text"
                                     value="Ingeniería" readonly>
-                            </div>
-
-                            <div class="campo">
-                                <label for="escuela">Escuela</label>
-                                <input id="escuela" type="text"
-                                    value="Escuela de demostración" readonly>
                             </div>
 
                             <div class="campo">
@@ -361,12 +376,6 @@
                             </div>
 
                             <div class="campo">
-                                <label for="gpa">GPA general</label>
-                                <input id="gpa" type="text"
-                                    value="78 / 100" readonly>
-                            </div>
-
-                            <div class="campo">
                                 <label for="correo">Correo institucional</label>
                                 <input id="correo" type="email"
                                     value="estudiante.demo@uees.edu.ec" readonly>
@@ -374,7 +383,7 @@
 
                             <div class="campo">
                                 <label for="celular">Celular</label>
-                                <input id="celular" type="tel"
+                                <input id="celular" name="celular" type="tel"
                                     autocomplete="tel"
                                     placeholder="Ingresa tu número de contacto"
                                     required maxlength="20">
@@ -404,13 +413,14 @@
                     <h2 id="titulo-tramite" tabindex="-1">Ahora, tu trámite</h2>
 
                     <p class="introduccion">
-                        Selecciona la materia para la que solicitarás
-                        el examen de recuperación.
+                        Selecciona la materia y declara tus datos académicos.
+                        La asistente verificará la información durante la revisión.
                     </p>
 
                     <div class="aviso">
                         Recuperación admite una sola materia por solicitud.
-                        La selección no representa una aprobación de elegibilidad.
+                        La selección y los datos declarados no representan
+                        una aprobación de elegibilidad.
                     </div>
 
                     <div class="campos">
@@ -422,8 +432,8 @@
 
                             <p id="ayuda-materia" class="ayuda">
                                 Lista ficticia para probar el selector.
-                                En la versión final se consultará el historial
-                                o la malla del estudiante.
+                                En la versión final se consultarán las materias
+                                de tu malla y los cursos del catálogo académico.
                             </p>
                         </div>
                     </div>
@@ -434,7 +444,7 @@
 
                     <section id="detalle-materia" class="detalle-materia"
                         aria-labelledby="titulo-materia" hidden>
-                        <h3 id="titulo-materia">Datos de la materia</h3>
+                        <h3 id="titulo-materia">Datos del curso seleccionado</h3>
 
                         <dl>
                             <div>
@@ -457,41 +467,100 @@
                                 <dt>Docente</dt>
                                 <dd id="materia-docente"></dd>
                             </div>
-                            <div>
-                                <dt>Estado académico</dt>
-                                <dd id="materia-estado"></dd>
-                            </div>
                         </dl>
                     </section>
 
-                    <div class="campos">
-                        <div class="campo">
-                            <label for="gpa-periodo">GPA del periodo</label>
-                            <input id="gpa-periodo" type="text"
-                                placeholder="Se mostrará al elegir una materia"
-                                readonly>
-                            <p class="ayuda">
-                                Dato ficticio del periodo seleccionado.
-                            </p>
+                    <div id="datos-academicos" hidden>
+                        <div class="campos">
+                            <div class="campo">
+                                <label for="estado-materia">
+                                    Estado académico declarado
+                                </label>
+                                <select id="estado-materia" name="estado_materia">
+                                    <option value="">Selecciona el estado</option>
+                                    <option value="aprobada">Aprobada</option>
+                                    <option value="reprobada">Reprobada</option>
+                                    <option value="semestre_actual">Semestre actual</option>
+                                    <option value="retirada">Retirada</option>
+                                </select>
+                            </div>
+
+                            <div class="campo">
+                                <label for="nota">Nota de la materia</label>
+                                <input id="nota" name="nota" type="number"
+                                    min="0" max="100" step="0.01"
+                                    placeholder="Ej. 65">
+                            </div>
+
+                            <div class="campo">
+                                <label for="asistencia">
+                                    Asistencia (%) — opcional
+                                </label>
+                                <input id="asistencia" name="asistencia"
+                                    type="number" min="0" max="100" step="0.01"
+                                    placeholder="Ej. 85">
+                                <p class="ayuda">
+                                    Completa este dato si lo conoces.
+                                </p>
+                            </div>
+
+                            <div class="campo">
+                                <label for="gpa-periodo">GPA del periodo</label>
+                                <input id="gpa-periodo" name="gpa_periodo"
+                                    type="number" min="0" max="100" step="0.01"
+                                    placeholder="Ej. 78">
+                                <p class="ayuda">
+                                    Declara el GPA aplicable al periodo
+                                    de la materia seleccionada.
+                                </p>
+                            </div>
+
+                            <div class="campo completo">
+                                <label for="historial-recuperacion">
+                                    Exámenes de recuperación anteriores
+                                </label>
+                                <select id="historial-recuperacion"
+                                    name="historial_recuperacion">
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="nunca">
+                                        Nunca he rendido un examen de recuperación
+                                    </option>
+                                    <option value="con_fecha">
+                                        He rendido uno y conozco la fecha
+                                    </option>
+                                    <option value="fecha_desconocida">
+                                        He rendido uno, pero no conozco la fecha
+                                    </option>
+                                    <option value="desconocido">
+                                        No puedo confirmar esta información
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div id="campo-fecha" class="campo completo" hidden>
+                                <label for="ultima-recuperacion">
+                                    Fecha del último examen de recuperación
+                                </label>
+                                <input id="ultima-recuperacion"
+                                    name="ultima_recuperacion" type="date"
+                                    disabled>
+                            </div>
+
+                            <div class="campo completo">
+                                <label for="observacion">
+                                    Observación (opcional)
+                                </label>
+                                <textarea id="observacion" name="observacion"
+                                    rows="4" maxlength="2000"
+                                    placeholder="Agrega información adicional sobre tu solicitud"></textarea>
+                            </div>
                         </div>
 
-                        <div class="campo">
-                            <label for="ultima-recuperacion">
-                                Último examen de recuperación
-                            </label>
-                            <input id="ultima-recuperacion" type="text"
-                                value="Sin registro en el perfil de prueba"
-                                readonly>
-                            <p class="ayuda">
-                                Este dato se obtendrá del historial académico.
-                            </p>
-                        </div>
-
-                        <div class="campo completo">
-                            <label for="observacion">Observación (opcional)</label>
-                            <textarea id="observacion" rows="4" maxlength="2000"
-                                placeholder="Agrega información adicional sobre tu solicitud"></textarea>
-                        </div>
+                        <p class="ayuda">
+                            Los datos académicos son declarados por ti.
+                            La información que no puedas confirmar
+                            requerirá revisión.
+                        </p>
                     </div>
 
                     <div class="acciones">
@@ -535,7 +604,7 @@
     </main>
 
     <script>
-        // Datos ficticios: se reemplazarán por el servicio del módulo 1.
+        // Cursos ficticios. No incluyen notas, asistencia ni GPA.
         const materias = [
             {
                 id: 'calculo-demo',
@@ -543,9 +612,7 @@
                 nombre: 'Cálculo II',
                 periodo: 'Ordinario I 2026',
                 paralelo: 'A',
-                docente: 'Docente de prueba A',
-                estado: 'Reprobada',
-                gpaPeriodo: 78
+                docente: 'Docente de prueba A'
             },
             {
                 id: 'fisica-demo',
@@ -553,9 +620,7 @@
                 nombre: 'Física I',
                 periodo: 'Ordinario I 2026',
                 paralelo: 'B',
-                docente: 'Docente de prueba B',
-                estado: 'Reprobada',
-                gpaPeriodo: 78
+                docente: 'Docente de prueba B'
             },
             {
                 id: 'programacion-demo',
@@ -563,9 +628,7 @@
                 nombre: 'Programación II',
                 periodo: 'Ordinario II 2025',
                 paralelo: 'A',
-                docente: 'Docente de prueba C',
-                estado: 'Reprobada',
-                gpaPeriodo: 76
+                docente: 'Docente de prueba C'
             }
         ];
 
@@ -573,12 +636,24 @@
         const pasos = document.querySelectorAll('.pasos li');
         const selectorMateria = document.getElementById('materia');
         const detalleMateria = document.getElementById('detalle-materia');
+        const datosAcademicos = document.getElementById('datos-academicos');
+        const historial = document.getElementById('historial-recuperacion');
+        const fecha = document.getElementById('ultima-recuperacion');
+        const campoFecha = document.getElementById('campo-fecha');
+
+        // Fecha local: evita permitir una recuperación en el futuro.
+        const hoy = new Date();
+        fecha.max = [
+            hoy.getFullYear(),
+            String(hoy.getMonth() + 1).padStart(2, '0'),
+            String(hoy.getDate()).padStart(2, '0')
+        ].join('-');
 
         materias.forEach(materia => {
             const opcion = document.createElement('option');
             opcion.value = materia.id;
             opcion.textContent =
-                `${materia.codigo} — ${materia.nombre} (${materia.periodo})`;
+                `${materia.codigo} — ${materia.nombre} (${materia.periodo}, paralelo ${materia.paralelo})`;
             selectorMateria.append(opcion);
         });
 
@@ -597,20 +672,15 @@
                 }
             });
 
-            const titulo = document.getElementById(
+            document.getElementById(
                 numero === 1 ? 'titulo-datos' : 'titulo-tramite'
-            );
-
-            titulo.focus();
+            ).focus();
         }
 
         formularioDatos.addEventListener('submit', evento => {
             evento.preventDefault();
 
-            const nombre = document.getElementById('nombre');
             const celular = document.getElementById('celular');
-
-            nombre.value = nombre.value.trim();
             celular.value = celular.value.trim();
 
             if (formularioDatos.reportValidity()) {
@@ -626,12 +696,18 @@
                 item => item.id === selectorMateria.value
             );
 
+            // Al cambiar de curso se limpian solo los datos de esa materia.
+            document.getElementById('estado-materia').value = '';
+            document.getElementById('nota').value = '';
+            document.getElementById('asistencia').value = '';
+            document.getElementById('gpa-periodo').value = '';
+
             detalleMateria.hidden = !materia;
+            datosAcademicos.hidden = !materia;
 
             if (!materia) {
                 document.getElementById('seleccion').textContent =
                     'No has seleccionado una materia.';
-                document.getElementById('gpa-periodo').value = '';
                 return;
             }
 
@@ -640,12 +716,20 @@
             document.getElementById('materia-periodo').textContent = materia.periodo;
             document.getElementById('materia-paralelo').textContent = materia.paralelo;
             document.getElementById('materia-docente').textContent = materia.docente;
-            document.getElementById('materia-estado').textContent = materia.estado;
-            document.getElementById('gpa-periodo').value =
-                `${materia.gpaPeriodo} / 100`;
 
             document.getElementById('seleccion').textContent =
                 `Materia seleccionada: ${materia.nombre}.`;
+        });
+
+        historial.addEventListener('change', () => {
+            const mostrarFecha = historial.value === 'con_fecha';
+
+            campoFecha.hidden = !mostrarFecha;
+            fecha.disabled = !mostrarFecha;
+
+            if (!mostrarFecha) {
+                fecha.value = '';
+            }
         });
     </script>
 </body>
