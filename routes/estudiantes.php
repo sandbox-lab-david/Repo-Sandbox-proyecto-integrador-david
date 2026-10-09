@@ -3,6 +3,9 @@
 use App\Http\Controllers\Estudiante\SolicitudController;
 use Illuminate\Support\Facades\Route;
 
+Route::post('/estudiante/solicitudes/documento', [SolicitudController::class, 'documento'])
+    ->middleware('throttle:10,1')->name('solicitudes.documento');
+
 Route::view('/estudiante/tramites', 'estudiante.catalogo')
     ->name('estudiante.catalogo');
 
@@ -41,10 +44,10 @@ Route::view(
     'estudiante.homologacion'
 )->name('estudiante.tramites.homologacion');
 
-Route::view(
+Route::get(
     '/estudiante/solicitudes/recuperacion/nueva',
-    'estudiante.formulario-recuperacion'
-)->name('estudiante.solicitudes.recuperacion.crear');
+    [SolicitudController::class, 'create']
+)->defaults('tramite', 'recuperacion')->name('estudiante.solicitudes.recuperacion.crear');
 
 Route::view(
     '/estudiante/acceso',

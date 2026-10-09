@@ -692,10 +692,9 @@
                 </ol>
 
                 <div class="acciones">
-                    <button class="boton" type="button" disabled>
-                        Iniciar solicitud
+                    <a class="boton boton-iniciar" href="{{ route('solicitudes.create', ['tramite' => 'tercer-registro']) }}">Iniciar solicitud
                         <span aria-hidden="true">→</span>
-                    </button>
+                    </a>
 
                     <button class="boton" type="button" disabled>
                         <svg
@@ -715,10 +714,7 @@
                     </button>
                 </div>
 
-                <p class="nota">
-                    El formulario y la conexión con el chatbot estarán
-                    disponibles en una siguiente entrega.
-                </p>
+                <p class="nota">El formulario está disponible con datos de demostración. La conexión con el chatbot estará disponible en una siguiente entrega.</p>
             </aside>
         </div>
 

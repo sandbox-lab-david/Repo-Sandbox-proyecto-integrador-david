@@ -20,7 +20,59 @@ class TramitesSimulados
 
     public function buscar(string $codigo): ?array
     {
-        return $this->tramites()[$codigo] ?? null;
+        return $this->tramites()[$codigo] ?? $this->otrosTramites()[$codigo] ?? null;
+    }
+
+    private function otrosTramites(): array
+    {
+        // Configuración de demostración: el catálogo definitivo corresponde a G4.
+        $campo = fn ($nombre, $etiqueta, $obligatorio = true, $tipo = 'texto') => [
+            'nombre' => $nombre, 'etiqueta' => $etiqueta,
+            'obligatorio' => $obligatorio, 'tipo' => $tipo,
+        ];
+        $motivo = $campo('motivo', 'Motivo de la solicitud', true, 'texto_largo');
+        $definiciones = [
+            'alcance-homologacion' => ['Alcance de homologación', 10, [$motivo, $campo('documento_faltante', 'Documento que faltó')]],
+            'ayudante' => ['Ayudante de cátedra', 10, [$campo('periodo', 'Periodo'), $campo('anio', 'Año'), $campo('gpa_general', 'GPA general', false), $campo('motivacion', 'Motivación', false, 'texto_largo')]],
+            'cambio-carrera' => ['Cambio de carrera', 0, [$campo('carrera_destino', 'Carrera de destino'), $campo('nuevo_codigo', '¿Solicitas nuevo código estudiantil? (sí/no)', false), $motivo]],
+            'cambio-malla' => ['Cambio de malla / pénsum', 0, [$campo('pensum_actual', 'Pénsum actual'), $campo('malla_destino', 'Malla de destino'), $campo('motivo', 'Motivo', false, 'texto_largo')]],
+            'cambio-modalidad' => ['Cambio de modalidad', 0, [$campo('modalidad_actual', 'Modalidad actual'), $campo('modalidad_destino', 'Modalidad solicitada'), $campo('carrera_destino', 'Carrera de destino', false), $motivo]],
+            'suficiencia' => ['Examen de suficiencia', 10, [$campo('tipo_respaldo', 'Tipo de respaldo'), $campo('fundamento', 'Fundamento', true, 'texto_largo')]],
+            'homologacion' => ['Homologación', 10, [$campo('institucion', 'Institución de procedencia'), $campo('carrera_destino', 'Carrera de destino'), $campo('informacion', 'Información adicional', false, 'texto_largo')]],
+            'incompleto' => ['Incompleto', 10, [$campo('tipo_causa', 'Tipo de causa'), $campo('detalle', 'Detalle de la causa', true, 'texto_largo')]],
+            'person-to-person' => ['Person to Person', 10, [$campo('motivo', 'Motivo', false, 'texto_largo')]],
+            'recalificacion' => ['Recalificación de examen', 10, [$campo('evaluacion', 'Evaluación'), $campo('publicacion_fecha', 'Fecha de publicación de la nota', true, 'fecha'), $campo('publicacion_hora', 'Hora de publicación de la nota'), $campo('reclamo', 'Puntos del reclamo', true, 'texto_largo')]],
+            'registro-extemporaneo' => ['Registro extemporáneo', 10, [$campo('oyente', '¿Asististe como oyente? (sí/no)'), $motivo]],
+            'reincorporacion' => ['Reincorporación a carrera', 0, [$campo('ultimo_periodo', 'Último periodo cursado', false), $motivo]],
+            'retiro-carrera' => ['Retiro de carrera', 0, [$motivo]],
+            'retiro-materia' => ['Retiro de materia', 10, [$campo('semana', 'Semana del periodo', false), $campo('motivo', 'Motivo', false, 'texto_largo')]],
+            'retiro-universidad' => ['Retiro de universidad', 0, [$motivo]],
+            'retiro-extemporaneo' => ['Retiro extemporáneo', 10, [$campo('motivo', 'Motivo excepcional', true, 'texto_largo')]],
+            'tercer-registro' => ['Tercer registro', 10, []],
+        ];
+        $resultado = [];
+        foreach ($definiciones as $codigo => [$nombre, $maximo, $campos]) {
+            $porMateria = [];
+            if ($codigo === 'tercer-registro') {
+                foreach ([1, 2] as $registro) {
+                    $porMateria[] = $campo('registro_'.$registro.'_anio', 'Año del registro '.$registro);
+                    $porMateria[] = $campo('registro_'.$registro.'_periodo', 'Periodo del registro '.$registro);
+                    $porMateria[] = $campo('registro_'.$registro.'_nota', 'Nota del registro '.$registro, true, 'numero') + ['min' => 0, 'max' => 100];
+                }
+            }
+            if ($codigo === 'ayudante') {
+                $porMateria[] = $campo('calificacion', 'Calificación en la materia', false, 'numero') + ['min' => 0, 'max' => 100];
+            }
+            $resultado[$codigo] = [
+                'nombre' => $nombre, 'ficha' => 'estudiante.tramites.'.$codigo,
+                'instrucciones' => 'Completa los datos de este trámite. La información será revisada por la facultad.',
+                'max_materias' => $maximo, 'campos_materia' => $porMateria,
+                'campos' => $campos,
+                'documentos' => [['id' => 'otro', 'nombre' => 'Documento de apoyo (requisitos pendientes de confirmación)', 'obligatorio' => false]],
+            ];
+        }
+
+        return $resultado;
     }
 
     public function materias(): array

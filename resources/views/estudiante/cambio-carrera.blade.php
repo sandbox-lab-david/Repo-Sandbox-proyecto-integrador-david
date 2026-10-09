@@ -5,99 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cambio de carrera | Portal del estudiante</title>
 
-    <style>
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f6fa;
-            color: #202939;
-        }
-
-        header {
-            background: #781c35;
-            color: white;
-            padding: 22px 24px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        main {
-            max-width: 900px;
-            margin: auto;
-            padding: 32px 24px;
-        }
-
-        .volver { color: #781c35; }
-
-        .categoria {
-            display: inline-block;
-            background: #f6e8ed;
-            color: #781c35;
-            padding: 6px 12px;
-            border-radius: 20px;
-            margin-top: 28px;
-        }
-
-        h1 { font-size: 32px; line-height: 1.2; }
-        h2 { font-size: 21px; margin-top: 0; }
-        p, li { line-height: 1.7; }
-        li + li { margin-top: 8px; }
-
-        .seccion {
-            background: white;
-            border: 1px solid #e0e4eb;
-            border-radius: 14px;
-            padding: 24px;
-            margin: 20px 0;
-        }
-
-        .aviso {
-            background: #fff3d6;
-            border-left: 4px solid #b57900;
-        }
-
-        .acciones {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        button {
-            font: inherit;
-            border: 0;
-            border-radius: 8px;
-            padding: 13px 18px;
-            background: #eceef2;
-            color: #596579;
-        }
-
-        .nota { color: #596579; font-size: 14px; }
-
-        a:focus-visible {
-            outline: 3px solid #781c35;
-            outline-offset: 4px;
-        }
-
-        @media (max-width: 600px) {
-            main { padding: 24px 16px; }
-            h1 { font-size: 28px; }
-            .seccion { padding: 20px; }
-            .acciones { flex-direction: column; }
-        }
-    </style>
+    @include('estudiante.partials.estilo-ficha')
 </head>
 <body>
-    <header>Portal del estudiante</header>
+    @include('estudiante.partials.encabezado-ficha')
 
     <main>
         <a class="volver" href="{{ route('estudiante.catalogo') }}">
             ← Volver al catálogo
         </a>
 
-        <div>
-            <span class="categoria">Cambios académicos</span>
+        <div class="introduccion"><span class="categoria">Cambios académicos</span>
 
             <h1>Cambio de carrera</h1>
 
@@ -107,45 +25,101 @@
             </p>
         </div>
 
-        <section class="seccion">
-            <h2>Requisitos</h2>
+        <div class="distribucion"><div class="contenido">
+<section class="panel">
+            <div class="titulo-seccion">
+                        <svg
+                            class="icono-titulo"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <path d="M14 2v6h6M8 12l1 1 2-2M14 12h2M8 17l1 1 2-2M14 17h2"/>
+                        </svg>
+
+                        <h2 id="titulo-requisitos">Requisitos</h2>
+                    </div>
 
             <p>
                 Las condiciones de elegibilidad para este trámite
                 deben confirmarse con la facultad.
             </p>
 
-            <p>Para completar la solicitud necesitarás:</p>
 
-            <ul>
-                <li>Seleccionar la carrera de destino.</li>
-                <li>Indicar si solicitas un nuevo código estudiantil.</li>
-                <li>
-                    Explicar el motivo del cambio de carrera.
-                    Este campo es obligatorio.
-                </li>
-            </ul>
+
+            <ol class="lista-requisitos" role="list">
+                <li><div><h3>Carrera de destino</h3><p>Seleccionar la carrera de destino.</p></div></li>
+                <li><div><h3>Nuevo código estudiantil</h3><p>Indicar si solicitas un nuevo código estudiantil.</p></div></li>
+                <li><div><h3>Motivo del cambio</h3><p>Explicar el motivo del cambio de carrera.
+                    Este campo es obligatorio.</p></div></li>
+            </ol>
         </section>
 
-        <section class="seccion">
+        <div class="informacion-adicional"><section class="panel tarjeta-informacion"><span class="icono-circular">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                                focusable="false"
+                            >
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <path d="M14 2v6h6M8 13h8M8 17h5"/>
+                            </svg>
+                        </span><div>
             <h2>Documentos de respaldo</h2>
 
             <p>
                 Los documentos de respaldo requeridos para este trámite
                 están pendientes de confirmación por la facultad.
             </p>
-        </section>
+        </div></section>
 
-        <section class="seccion">
+        <section class="panel tarjeta-informacion"><span class="icono-circular">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.7"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                                focusable="false"
+                            >
+                                <rect x="3" y="5" width="18" height="16" rx="2"/>
+                                <path d="M16 3v4M8 3v4M3 11h18"/>
+                            </svg>
+                        </span><div>
             <h2>Plazo indicado</h2>
 
             <p>
                 El plazo para presentar la solicitud está pendiente
                 de confirmación por la facultad.
             </p>
-        </section>
+        </div></section></div>
 
-        <section class="seccion aviso">
+        <section class="aviso"><svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 11v6M12 7h.01"/>
+                    </svg><div>
             <h2>Información pendiente de confirmación</h2>
 
             <p>
@@ -163,35 +137,37 @@
                 Esta ficha es informativa y no representa una
                 aprobación de elegibilidad.
             </p>
-        </section>
+        </div></section>
 
-        <section class="seccion">
-            <h2>¿Qué sigue?</h2>
 
-            <p>
-                Completarás el formulario indicando la carrera
-                de destino, si solicitas un nuevo código estudiantil
-                y el motivo del cambio. Adjuntarás los respaldos
-                requeridos y descargarás el documento oficial.
-                Después deberás firmarlo y subir el PDF firmado
-                para enviar la solicitud.
-            </p>
+    </div>
+<aside class="panel siguiente-paso">
+            <h2 id="titulo-siguiente">Tu siguiente paso</h2>
+@include('estudiante.partials.pasos-ficha')
 
             <div class="acciones">
-                <button type="button" disabled>
-                    Iniciar solicitud
-                </button>
+                <a class="boton boton-iniciar" href="{{ route('solicitudes.create', ['tramite' => 'cambio-carrera']) }}">Iniciar solicitud <span aria-hidden="true">→</span>
+                </a>
 
-                <button type="button" disabled>
-                    Consultar chatbot
+                <button class="boton boton-chatbot" type="button" disabled>
+<svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-4-.9L3 21l1.9-5.5a9 9 0 0 1-.9-4A8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z"/>
+                        </svg> Consultar chatbot
                 </button>
             </div>
 
-            <p class="nota">
-                El formulario de este trámite y la conexión con el
-                chatbot estarán disponibles en una siguiente entrega.
-            </p>
-        </section>
+            <p class="nota">El formulario está disponible con datos de demostración. La conexión con el chatbot estará disponible en una siguiente entrega.</p>
+        </aside>
+</div>
     </main>
 </body>
 </html>

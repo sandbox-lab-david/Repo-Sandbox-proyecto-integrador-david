@@ -740,7 +740,7 @@
 
                         <button id="confirmar-solicitud" class="principal"
                             type="button">
-                            Confirmar solicitud
+                            {{ $codigoTramite === 'recuperacion' ? 'Descargar documento Word' : 'Confirmar solicitud' }}
                         </button>
                     </div>
 
@@ -1272,10 +1272,40 @@
             .addEventListener('click', () => mostrarPaso(3));
 
         document.getElementById('confirmar-solicitud')
-            .addEventListener('click', () => {
+            .addEventListener('click', async () => {
                 const declaracion = document.getElementById('declaracion');
 
                 if (!declaracion.reportValidity()) return;
+
+                if (@json($codigoTramite) === 'recuperacion') {
+                    const boton = document.getElementById('confirmar-solicitud');
+                    const mensaje = document.getElementById('mensaje-confirmacion');
+                    boton.disabled = true;
+                    mensaje.textContent = 'Preparando el documento…';
+                    try {
+                        const respuesta = await fetch(@json(route('solicitudes.documento')), {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': @json(csrf_token())},
+                            body: JSON.stringify({tramite: 'recuperacion', nombre: textoDe('nombre'), codigo: textoDe('codigo'), carrera: textoDe('carrera'), correo: textoDe('correo'), celular: textoDe('celular'), materia_id: elegidas[0]?.id})
+                        });
+                        if (!respuesta.ok) {
+                            const error = await respuesta.json();
+                            throw new Error(error.message || 'No se pudo generar el documento.');
+                        }
+                        const url = URL.createObjectURL(await respuesta.blob());
+                        const enlace = document.createElement('a');
+                        enlace.href = url;
+                        enlace.download = 'solicitud-recuperacion.docx';
+                        enlace.click();
+                        setTimeout(() => URL.revokeObjectURL(url), 60000);
+                        mensaje.textContent = 'Word descargado con datos de demostración. Ábrelo en Microsoft Word y usa Archivo → Exportar → Crear PDF. La solicitud todavía no se guarda ni se envía. La carga del PDF firmado está pendiente.';
+                    } catch (error) {
+                        mensaje.textContent = error.message;
+                    } finally {
+                        boton.disabled = false;
+                    }
+                    return;
+                }
 
                 document.getElementById('mensaje-confirmacion').textContent =
                     'Vista de demostración: la solicitud no se guardó. ' +
