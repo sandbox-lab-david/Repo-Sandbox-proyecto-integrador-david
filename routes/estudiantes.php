@@ -55,6 +55,11 @@ Route::get(
 )->defaults('tramite', 'recuperacion')->name('estudiante.solicitudes.recuperacion.crear');
 
 Route::view(
+    '/estudiante/solicitudes/gracia/nueva',
+    'estudiante.formulario-gracia'
+)->name('estudiante.solicitudes.gracia.crear');
+
+Route::view(
     '/estudiante/acceso',
     'estudiante.login'
 )->name('estudiante.acceso');
