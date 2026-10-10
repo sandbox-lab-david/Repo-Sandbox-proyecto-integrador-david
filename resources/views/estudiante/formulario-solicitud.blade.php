@@ -275,15 +275,20 @@
         .estado-requisito { flex-shrink: 0; color: #596579; }
         .estado-requisito.listo { color: #1f7a4d; font-weight: bold; }
 
-        .carga {
-            margin-top: 24px;
-            padding: 20px;
-            border: 1px dashed #b8c1ce;
-            border-radius: 10px;
-            background: #f5f6fa;
+        .carga { margin-top: 24px; }
+
+        .acciones-archivo { display: flex; gap: 8px; }
+        .acciones-archivo button { padding: 10px 14px; }
+
+        dialog {
+            width: min(900px, calc(100% - 32px));
+            padding: 24px;
+            border: 0;
+            border-radius: 14px;
+            color: inherit;
         }
 
-        .carga input { background: white; }
+        dialog::backdrop { background: rgba(32, 41, 57, 0.55); }
 
         .lista-archivos li {
             display: grid;
@@ -639,15 +644,12 @@
                     <ul id="requisitos-respaldo" class="requisitos-respaldo"></ul>
 
                     <div class="carga">
-                        <label for="archivos">Agregar archivos</label>
-                        <input id="archivos" type="file" multiple
-                            accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                            aria-describedby="ayuda-archivos">
-                        <p id="ayuda-archivos" class="ayuda">
-                            PDF, JPG o PNG. Máximo 10 MB por archivo.
-                        </p>
+                        <x-subir-archivo id="archivos" name="archivo"
+                            accept="pdf,jpg,png" max="10240" multiple
+                            :vista-previa="false" />
                     </div>
 
+                    <p id="estado-archivos" class="seleccion" role="status"></p>
                     <p id="error-archivos" class="error" role="alert"></p>
 
                     <ul id="lista-archivos" class="lista-archivos"
@@ -669,9 +671,20 @@
                     </div>
 
                     <p class="ayuda">
-                        Los archivos se revisan solo en tu navegador;
-                        todavía no se suben al servidor.
+                        Tus archivos se guardan de forma temporal mientras
+                        completas el formulario. Quedarán unidos a tu
+                        solicitud cuando el guardado esté disponible.
                     </p>
+
+                    <dialog id="visor-respaldo" aria-label="Vista previa del archivo">
+                        <div id="contenido-visor"></div>
+
+                        <div class="acciones">
+                            <button id="cerrar-visor" class="secundario" type="button">
+                                Cerrar
+                            </button>
+                        </div>
+                    </dialog>
                 </section>
 
                 <section id="paso-4" class="panel"
@@ -1010,27 +1023,30 @@
         // Paso 3: respaldos que pide este trámite.
         const requisitosRespaldo = tramite.documentos;
 
-        const TAMANO_MAXIMO = 10 * 1024 * 1024;
-        const archivos = [];
+        const urlRespaldos = @json(route('respaldos-temporales.store'));
+        const cabecerasRespaldos = {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': @json(csrf_token())
+        };
+        const TIPOS_RESPALDO = {
+            'application/pdf': 'PDF', 'image/jpeg': 'JPG', 'image/png': 'PNG'
+        };
+
+        // Lo que ya está en el servidor, en la carpeta temporal de esta sesión.
+        const archivos = @json($respaldosSubidos)
+            .map(respaldo => ({ ...respaldo, requisito: '' }));
+
         const entradaArchivos = document.getElementById('archivos');
         const listaArchivos = document.getElementById('lista-archivos');
         const errorArchivos = document.getElementById('error-archivos');
+        const estadoArchivos = document.getElementById('estado-archivos');
+        const visorRespaldo = document.getElementById('visor-respaldo');
+        const contenidoVisor = document.getElementById('contenido-visor');
 
         function formatearTamano(bytes) {
             return bytes < 1024 * 1024
                 ? `${Math.max(1, Math.round(bytes / 1024))} KB`
                 : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-        }
-
-        // Revisa los primeros bytes: no basta con la extensión del nombre.
-        async function tipoPorContenido(archivo) {
-            const bytes = new Uint8Array(await archivo.slice(0, 8).arrayBuffer());
-            const empiezaCon = firma => firma.every((valor, i) => bytes[i] === valor);
-
-            if (empiezaCon([0x25, 0x50, 0x44, 0x46])) return 'PDF';
-            if (empiezaCon([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])) return 'PNG';
-            if (empiezaCon([0xFF, 0xD8, 0xFF])) return 'JPG';
-            return null;
         }
 
         function pintarRequisitos() {
@@ -1059,6 +1075,38 @@
             });
         }
 
+        async function verRespaldo(item) {
+            const respuesta = await fetch(`${urlRespaldos}/${item.id}`, {
+                headers: { 'Accept': 'text/html' }
+            }).catch(() => null);
+
+            if (!respuesta?.ok) {
+                errorArchivos.textContent =
+                    `No se pudo abrir ${item.nombre_original}. Inténtalo de nuevo.`;
+                return;
+            }
+
+            contenidoVisor.innerHTML = await respuesta.text();
+            visorRespaldo.showModal();
+        }
+
+        async function quitarRespaldo(item) {
+            const respuesta = await fetch(`${urlRespaldos}/${item.id}`, {
+                method: 'DELETE',
+                headers: cabecerasRespaldos
+            }).catch(() => null);
+
+            if (!respuesta?.ok) {
+                errorArchivos.textContent =
+                    `No se pudo quitar ${item.nombre_original}. Inténtalo de nuevo.`;
+                return false;
+            }
+
+            archivos.splice(archivos.indexOf(item), 1);
+            errorArchivos.textContent = '';
+            return true;
+        }
+
         function pintarArchivos() {
             listaArchivos.innerHTML = '';
             document.getElementById('sin-archivos').hidden = archivos.length > 0;
@@ -1070,9 +1118,10 @@
                 const nombre = document.createElement('span');
                 const tamano = document.createElement('span');
                 nombre.className = 'archivo-nombre';
-                nombre.textContent = item.archivo.name;
+                nombre.textContent = item.nombre_original;
                 tamano.className = 'archivo-tamano';
-                tamano.textContent = `${item.tipo} · ${formatearTamano(item.archivo.size)}`;
+                tamano.textContent =
+                    `${TIPOS_RESPALDO[item.mime] ?? 'Archivo'} · ${formatearTamano(item.tamano_bytes)}`;
                 datos.append(nombre, tamano);
 
                 const campo = document.createElement('div');
@@ -1096,67 +1145,117 @@
                 });
                 campo.append(etiqueta, selector);
 
+                const ver = document.createElement('button');
+                ver.type = 'button';
+                ver.className = 'secundario';
+                ver.textContent = 'Ver';
+                ver.setAttribute('aria-label', `Ver ${item.nombre_original}`);
+                ver.addEventListener('click', () => verRespaldo(item));
+
                 const quitar = document.createElement('button');
                 quitar.type = 'button';
                 quitar.className = 'secundario';
                 quitar.textContent = 'Quitar';
-                quitar.setAttribute('aria-label', `Quitar ${item.archivo.name}`);
-                quitar.addEventListener('click', () => {
-                    archivos.splice(indice, 1);
-                    pintarArchivos();
-                    entradaArchivos.focus();
+                quitar.setAttribute('aria-label', `Quitar ${item.nombre_original}`);
+                quitar.addEventListener('click', async () => {
+                    quitar.disabled = true;
+
+                    if (await quitarRespaldo(item)) {
+                        pintarArchivos();
+                        entradaArchivos.focus();
+                    } else {
+                        quitar.disabled = false;
+                    }
                 });
 
-                fila.append(datos, campo, quitar);
+                const acciones = document.createElement('div');
+                acciones.className = 'acciones-archivo';
+                acciones.append(ver, quitar);
+
+                fila.append(datos, campo, acciones);
                 listaArchivos.append(fila);
             });
 
             pintarRequisitos();
         }
 
-        entradaArchivos.addEventListener('change', async () => {
-            const rechazados = [];
+        async function subirRespaldo(archivo) {
+            const datos = new FormData();
+            datos.append('tramite', @json($codigoTramite));
+            datos.append('archivo', archivo);
 
-            for (const archivo of entradaArchivos.files) {
-                const repetido = archivos.some(item =>
-                    item.archivo.name === archivo.name &&
-                    item.archivo.size === archivo.size &&
-                    item.archivo.lastModified === archivo.lastModified
+            const respuesta = await fetch(urlRespaldos, {
+                method: 'POST',
+                headers: cabecerasRespaldos,
+                body: datos
+            }).catch(() => null);
+
+            if (respuesta?.ok) return respuesta.json();
+
+            const motivos = {
+                413: 'Supera el tamaño que acepta el servidor.',
+                419: 'Tu sesión expiró. Recarga la página.',
+                429: 'Subiste demasiados archivos seguidos. Espera un minuto.'
+            };
+            const error = await respuesta?.json().catch(() => null);
+
+            throw new Error(
+                motivos[respuesta?.status] ??
+                error?.errors?.archivo?.[0] ??
+                'No se pudo subir. Inténtalo de nuevo.'
+            );
+        }
+
+        // El componente subir-archivo ya descartó lo que no es PDF, JPG o PNG de
+        // hasta 10 MB; el servidor lo vuelve a comprobar al guardar.
+        document.getElementById('paso-3')
+            .addEventListener('subir-archivo:cambio', async evento => {
+                const nuevos = evento.detail.archivos.filter(archivo =>
+                    !archivos.some(item =>
+                        item.nombre_original === archivo.name &&
+                        item.tamano_bytes === archivo.size
+                    )
                 );
+                const fallidos = [];
 
-                if (repetido) continue;
+                errorArchivos.textContent = '';
+                entradaArchivos.disabled = true;
 
-                if (archivo.size > TAMANO_MAXIMO) {
-                    rechazados.push(`${archivo.name} supera los 10 MB`);
-                    continue;
+                for (const [indice, archivo] of nuevos.entries()) {
+                    estadoArchivos.textContent =
+                        `Subiendo ${indice + 1} de ${nuevos.length}: ${archivo.name}…`;
+
+                    try {
+                        const subido = await subirRespaldo(archivo);
+
+                        // Si solo hay un requisito pendiente obligatorio, se sugiere ese.
+                        const pendiente = requisitosRespaldo.find(requisito =>
+                            requisito.obligatorio &&
+                            !archivos.some(item => item.requisito === requisito.id)
+                        );
+
+                        archivos.push({
+                            ...subido,
+                            requisito: pendiente ? pendiente.id : ''
+                        });
+                        pintarArchivos();
+                    } catch (error) {
+                        fallidos.push(`${archivo.name}: ${error.message}`);
+                    }
                 }
 
-                const tipo = await tipoPorContenido(archivo);
+                entradaArchivos.value = '';
+                entradaArchivos.disabled = false;
+                estadoArchivos.textContent = '';
+                errorArchivos.textContent = fallidos.join(' ');
+            });
 
-                if (!tipo) {
-                    rechazados.push(`${archivo.name} no es un PDF, JPG o PNG válido`);
-                    continue;
-                }
+        document.getElementById('cerrar-visor')
+            .addEventListener('click', () => visorRespaldo.close());
 
-                // Si solo hay un requisito pendiente obligatorio, se sugiere ese.
-                const pendiente = requisitosRespaldo.find(requisito =>
-                    requisito.obligatorio &&
-                    !archivos.some(item => item.requisito === requisito.id)
-                );
-
-                archivos.push({
-                    archivo,
-                    tipo,
-                    requisito: pendiente ? pendiente.id : ''
-                });
-            }
-
-            entradaArchivos.value = '';
-            errorArchivos.textContent = rechazados.length
-                ? `No se agregaron: ${rechazados.join('; ')}.`
-                : '';
-
-            pintarArchivos();
+        // Al cerrar se vacía, para que el PDF no siga cargado detrás.
+        visorRespaldo.addEventListener('close', () => {
+            contenidoVisor.innerHTML = '';
         });
 
         document.getElementById('continuar-revisar')
@@ -1255,7 +1354,7 @@
                     r => r.id === item.requisito
                 );
                 const fila = document.createElement('li');
-                fila.textContent = `${item.archivo.name} — ${requisito.nombre}`;
+                fila.textContent = `${item.nombre_original} — ${requisito.nombre}`;
                 listaRespaldos.append(fila);
             });
 

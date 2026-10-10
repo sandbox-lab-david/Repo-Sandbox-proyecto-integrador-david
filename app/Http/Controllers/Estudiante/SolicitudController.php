@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Estudiante;
 
 use App\Http\Controllers\Controller;
+use App\Services\Archivos\RespaldosTemporales;
 use App\Services\Solicitudes\TramitesSimulados;
 use App\Services\Solicitudes\DocumentoRecuperacion;
 use Illuminate\Http\Request;
@@ -38,7 +39,7 @@ class SolicitudController extends Controller
         ]);
     }
 
-    public function create(Request $request, TramitesSimulados $tramites): View
+    public function create(Request $request, TramitesSimulados $tramites, RespaldosTemporales $respaldos): View
     {
         $codigoTramite = (string) ($request->route('tramite') ?? $request->query('tramite'));
         $tramite = $tramites->buscar($codigoTramite);
@@ -49,6 +50,7 @@ class SolicitudController extends Controller
             'codigoTramite' => $codigoTramite,
             'tramite' => $tramite,
             'materias' => $tramites->materias(),
+            'respaldosSubidos' => $respaldos->delTramite($codigoTramite),
         ]);
     }
 }

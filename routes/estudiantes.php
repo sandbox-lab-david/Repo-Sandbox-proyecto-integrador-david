@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Estudiante\ArchivoController;
+use App\Http\Controllers\Estudiante\RespaldoTemporalController;
 use App\Http\Controllers\Estudiante\SolicitudController;
 use Illuminate\Support\Facades\Route;
 
@@ -123,3 +125,17 @@ Route::get(
     '/estudiante/solicitudes/nueva',
     [SolicitudController::class, 'create']
 )->name('solicitudes.create');
+
+// Respaldos del paso 3 mientras la solicitud todavía no existe: carpeta temporal de la sesión.
+Route::post('/estudiante/respaldos-temporales', [RespaldoTemporalController::class, 'store'])
+    ->middleware('throttle:60,1')->name('respaldos-temporales.store');
+
+Route::get('/estudiante/respaldos-temporales/{id}', [RespaldoTemporalController::class, 'show'])
+    ->whereUuid('id')->name('respaldos-temporales.show');
+
+Route::delete('/estudiante/respaldos-temporales/{id}', [RespaldoTemporalController::class, 'destroy'])
+    ->whereUuid('id')->name('respaldos-temporales.destroy');
+
+// Archivos privados con enlace firmado (ArchivoService::urlTemporal y <x-visor-documento>).
+Route::get('/archivos/ver', [ArchivoController::class, 'ver'])
+    ->middleware('signed')->name('archivos.ver');
