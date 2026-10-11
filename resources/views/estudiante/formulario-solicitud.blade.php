@@ -353,6 +353,35 @@
 
         .lista-resumen { margin: 0; font-size: 14px; line-height: 1.6; }
 
+        .bloque-firmado {
+            margin-top: 24px;
+            padding: 20px;
+            border: 1px solid #eadce1;
+            border-left: 4px solid #781c35;
+            border-radius: 10px;
+        }
+
+        .pasos-firma {
+            margin: 12px 0 0;
+            padding-left: 20px;
+            color: #465166;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .firmado-subido {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 16px;
+            margin-top: 16px;
+            padding: 14px 16px;
+            background: #f5f6fa;
+            border: 1px solid #e0e4eb;
+            border-radius: 9px;
+        }
+
         .agregar-materia { display: flex; gap: 12px; }
         .agregar-materia button { flex-shrink: 0; }
         .detalle-materia .encabezado-resumen { margin-bottom: 4px; }
@@ -704,16 +733,6 @@
                         completas el formulario. Quedarán unidos a tu
                         solicitud cuando el guardado esté disponible.
                     </p>
-
-                    <dialog id="visor-respaldo" aria-label="Vista previa del archivo">
-                        <div id="contenido-visor"></div>
-
-                        <div class="acciones">
-                            <button id="cerrar-visor" class="secundario" type="button">
-                                Cerrar
-                            </button>
-                        </div>
-                    </dialog>
                 </section>
 
                 <section id="paso-4" class="panel"
@@ -788,6 +807,49 @@
 
                     <p id="mensaje-confirmacion" class="seleccion"
                         role="status"></p>
+
+                    <section id="bloque-firmado" class="bloque-firmado"
+                        aria-labelledby="titulo-firmado" hidden>
+
+                        <h3 id="titulo-firmado">Sube tu documento firmado</h3>
+
+                        <ol class="pasos-firma">
+                            <li>Imprime el documento oficial y fírmalo.</li>
+                            <li>Escanéalo completo en un solo archivo PDF.</li>
+                            <li>Súbelo aquí. Si subes otro, reemplaza al anterior.</li>
+                        </ol>
+
+                        <div class="carga">
+                            <x-subir-archivo id="firmado" name="firmado"
+                                accept="pdf" max="10240" etiqueta="PDF firmado"
+                                :vista-previa="false" />
+                        </div>
+
+                        <p id="estado-firmado" class="seleccion" role="status"></p>
+                        <p id="error-firmado" class="error" role="alert"></p>
+
+                        <div id="firmado-subido" class="firmado-subido" hidden>
+                            <div>
+                                <span class="archivo-nombre"></span>
+                                <span class="archivo-tamano"></span>
+                            </div>
+
+                            <div class="acciones-archivo">
+                                <button id="ver-firmado" class="secundario" type="button">
+                                    Ver
+                                </button>
+
+                                <button id="quitar-firmado" class="secundario" type="button">
+                                    Quitar
+                                </button>
+                            </div>
+                        </div>
+
+                        <p id="recibido-firmado" class="ayuda" hidden>
+                            Recibimos tu PDF firmado. En esta demostración
+                            la solicitud todavía no se envía a revisión.
+                        </p>
+                    </section>
                 </section>
             </div>
 
@@ -811,6 +873,16 @@
                 </a>
             </aside>
         </div>
+
+        <dialog id="visor-respaldo" aria-label="Vista previa del archivo">
+            <div id="contenido-visor"></div>
+
+            <div class="acciones">
+                <button id="cerrar-visor" class="secundario" type="button">
+                    Cerrar
+                </button>
+            </div>
+        </dialog>
     </main>
 
     <script>
@@ -1133,19 +1205,24 @@
             });
         }
 
-        async function verRespaldo(item) {
-            const respuesta = await fetch(`${urlRespaldos}/${item.id}`, {
+        async function abrirVisor(url) {
+            const respuesta = await fetch(url, {
                 headers: { 'Accept': 'text/html' }
             }).catch(() => null);
 
-            if (!respuesta?.ok) {
-                errorArchivos.textContent =
-                    `No se pudo abrir ${item.nombre_original}. Inténtalo de nuevo.`;
-                return;
-            }
+            if (!respuesta?.ok) return false;
 
             contenidoVisor.innerHTML = await respuesta.text();
             visorRespaldo.showModal();
+
+            return true;
+        }
+
+        async function verRespaldo(item) {
+            if (!await abrirVisor(`${urlRespaldos}/${item.id}`)) {
+                errorArchivos.textContent =
+                    `No se pudo abrir ${item.nombre_original}. Inténtalo de nuevo.`;
+            }
         }
 
         async function quitarRespaldo(item) {
@@ -1251,6 +1328,10 @@
 
             if (respuesta?.ok) return respuesta.json();
 
+            throw new Error(await motivoRechazo(respuesta));
+        }
+
+        async function motivoRechazo(respuesta) {
             const motivos = {
                 413: 'Supera el tamaño que acepta el servidor.',
                 419: 'Tu sesión expiró. Recarga la página.',
@@ -1258,11 +1339,9 @@
             };
             const error = await respuesta?.json().catch(() => null);
 
-            throw new Error(
-                motivos[respuesta?.status] ??
+            return motivos[respuesta?.status] ??
                 error?.errors?.archivo?.[0] ??
-                'No se pudo subir. Inténtalo de nuevo.'
-            );
+                'No se pudo subir. Inténtalo de nuevo.';
         }
 
         // El componente subir-archivo ya descartó lo que no es PDF, JPG o PNG de
@@ -1436,6 +1515,8 @@
 
                 if (!declaracion.reportValidity()) return;
 
+                bloqueFirmado.hidden = false;
+
                 if (@json($codigoTramite) === 'recuperacion') {
                     const boton = document.getElementById('confirmar-solicitud');
                     const mensaje = document.getElementById('mensaje-confirmacion');
@@ -1457,7 +1538,7 @@
                         enlace.download = 'solicitud-recuperacion.docx';
                         enlace.click();
                         setTimeout(() => URL.revokeObjectURL(url), 60000);
-                        mensaje.textContent = 'Word descargado con datos de demostración. Ábrelo en Microsoft Word y usa Archivo → Exportar → Crear PDF. La solicitud todavía no se guarda ni se envía. La carga del PDF firmado está pendiente.';
+                        mensaje.textContent = 'Word descargado con datos de demostración. Ábrelo en Microsoft Word y usa Archivo → Exportar → Crear PDF. Imprímelo, fírmalo y sube abajo el PDF firmado. La solicitud todavía no se guarda ni se envía.';
                     } catch (error) {
                         mensaje.textContent = error.message;
                     } finally {
@@ -1469,8 +1550,92 @@
                 document.getElementById('mensaje-confirmacion').textContent =
                     'Vista de demostración: la solicitud no se guardó. ' +
                     'Cuando el sistema esté conectado, aquí se generará ' +
-                    'tu código de solicitud y el documento oficial para firmar.';
+                    'tu código de solicitud y el documento oficial para firmar. ' +
+                    'Mientras tanto puedes probar abajo la subida del PDF firmado.';
             });
+
+        // PDF firmado (RF-2.11): uno por trámite, en la carpeta temporal de la sesión.
+        const urlFirmado = @json(route('firmados-temporales.store', $codigoTramite));
+        const bloqueFirmado = document.getElementById('bloque-firmado');
+        const entradaFirmado = document.getElementById('firmado');
+        const estadoFirmado = document.getElementById('estado-firmado');
+        const errorFirmado = document.getElementById('error-firmado');
+        let firmado = @json($firmado);
+
+        function pintarFirmado() {
+            const fila = document.getElementById('firmado-subido');
+
+            fila.hidden = firmado === null;
+            document.getElementById('recibido-firmado').hidden = firmado === null;
+
+            if (firmado) {
+                fila.querySelector('.archivo-nombre').textContent = firmado.nombre_original;
+                fila.querySelector('.archivo-tamano').textContent =
+                    `PDF · ${formatearTamano(firmado.tamano_bytes)}`;
+            }
+        }
+
+        // El componente subir-archivo ya descartó lo que no es un PDF de hasta
+        // 10 MB; el servidor lo vuelve a comprobar al guardar.
+        bloqueFirmado.addEventListener('subir-archivo:cambio', async evento => {
+            const archivo = evento.detail.archivos[0];
+
+            if (!archivo) return;
+
+            const datos = new FormData();
+            datos.append('archivo', archivo);
+
+            errorFirmado.textContent = '';
+            estadoFirmado.textContent = `Subiendo ${archivo.name}…`;
+            entradaFirmado.disabled = true;
+
+            const respuesta = await enCola(() => fetch(urlFirmado, {
+                method: 'POST',
+                headers: cabecerasRespaldos,
+                body: datos
+            }).catch(() => null));
+
+            entradaFirmado.value = '';
+            entradaFirmado.disabled = false;
+            estadoFirmado.textContent = '';
+
+            if (!respuesta?.ok) {
+                errorFirmado.textContent = `${archivo.name}: ${await motivoRechazo(respuesta)}`;
+                return;
+            }
+
+            firmado = await respuesta.json();
+            pintarFirmado();
+        });
+
+        document.getElementById('ver-firmado')
+            .addEventListener('click', async () => {
+                errorFirmado.textContent = await abrirVisor(urlFirmado)
+                    ? ''
+                    : 'No se pudo abrir el PDF firmado. Inténtalo de nuevo.';
+            });
+
+        document.getElementById('quitar-firmado')
+            .addEventListener('click', async () => {
+                const respuesta = await enCola(() => fetch(urlFirmado, {
+                    method: 'DELETE',
+                    headers: cabecerasRespaldos
+                }).catch(() => null));
+
+                if (!respuesta?.ok) {
+                    errorFirmado.textContent = 'No se pudo quitar el PDF firmado. Inténtalo de nuevo.';
+                    return;
+                }
+
+                firmado = null;
+                errorFirmado.textContent = '';
+                pintarFirmado();
+                entradaFirmado.focus();
+            });
+
+        // Si ya había uno subido, el bloque se muestra sin volver a confirmar.
+        bloqueFirmado.hidden = firmado === null;
+        pintarFirmado();
 
         // Borrador: guardar, descartar y retomar.
         function cuandoSeGuardo(iso) {
@@ -1592,6 +1757,11 @@
 
             errorArchivos.textContent = '';
             pintarArchivos();
+
+            firmado = null;
+            errorFirmado.textContent = '';
+            bloqueFirmado.hidden = true;
+            pintarFirmado();
 
             pasoActual = 1;
             mostrarPaso(1);

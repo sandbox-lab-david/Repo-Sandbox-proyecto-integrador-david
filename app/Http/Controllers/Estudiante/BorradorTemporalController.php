@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Estudiante;
 
 use App\Http\Controllers\Controller;
+use App\Services\Archivos\FirmadosTemporales;
 use App\Services\Archivos\RespaldosTemporales;
 use App\Services\Solicitudes\BorradoresTemporales;
 use App\Services\Solicitudes\TramitesSimulados;
@@ -21,6 +22,7 @@ class BorradorTemporalController extends Controller
         private readonly BorradoresTemporales $borradores,
         private readonly TramitesSimulados $tramites,
         private readonly RespaldosTemporales $respaldos,
+        private readonly FirmadosTemporales $firmados,
     ) {}
 
     public function update(Request $request, string $tramite): JsonResponse
@@ -67,10 +69,12 @@ class BorradorTemporalController extends Controller
     {
         $this->borradores->descartar($tramite);
 
-        // Los respaldos subidos para ese trámite son parte del borrador.
+        // Los respaldos y el PDF firmado de ese trámite son parte del borrador.
         foreach ($this->respaldos->delTramite($tramite) as $respaldo) {
             $this->respaldos->quitar($respaldo['id']);
         }
+
+        $this->firmados->quitar($tramite);
 
         return response()->noContent();
     }

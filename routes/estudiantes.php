@@ -3,6 +3,7 @@
 use App\Http\Controllers\Estudiante\ArchivoController;
 use App\Http\Controllers\Estudiante\BorradorTemporalController;
 use App\Http\Controllers\Estudiante\CatalogoController;
+use App\Http\Controllers\Estudiante\FirmadoTemporalController;
 use App\Http\Controllers\Estudiante\RespaldoTemporalController;
 use App\Http\Controllers\Estudiante\SolicitudController;
 use Illuminate\Support\Facades\Route;
@@ -144,6 +145,16 @@ Route::put('/estudiante/borradores-temporales/{tramite}', [BorradorTemporalContr
 
 Route::delete('/estudiante/borradores-temporales/{tramite}', [BorradorTemporalController::class, 'destroy'])
     ->where('tramite', '[a-z0-9_-]+')->name('borradores-temporales.destroy');
+
+// PDF firmado del paso 4 mientras la solicitud todavía no existe: uno por trámite, en la sesión.
+Route::post('/estudiante/firmados-temporales/{tramite}', [FirmadoTemporalController::class, 'store'])
+    ->where('tramite', '[a-z0-9_-]+')->middleware('throttle:20,1')->name('firmados-temporales.store');
+
+Route::get('/estudiante/firmados-temporales/{tramite}', [FirmadoTemporalController::class, 'show'])
+    ->where('tramite', '[a-z0-9_-]+')->name('firmados-temporales.show');
+
+Route::delete('/estudiante/firmados-temporales/{tramite}', [FirmadoTemporalController::class, 'destroy'])
+    ->where('tramite', '[a-z0-9_-]+')->name('firmados-temporales.destroy');
 
 // Archivos privados con enlace firmado (ArchivoService::urlTemporal y <x-visor-documento>).
 Route::get('/archivos/ver', [ArchivoController::class, 'ver'])

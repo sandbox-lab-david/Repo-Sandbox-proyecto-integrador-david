@@ -102,7 +102,8 @@ class RespaldosTemporales
         ];
     }
 
-    private function carpeta(): string
+    /** Carpeta temporal de la sesión; la crea la primera vez que se pide. */
+    public function carpeta(): string
     {
         $carpeta = $this->sesion->get(self::SESION.'.carpeta');
 

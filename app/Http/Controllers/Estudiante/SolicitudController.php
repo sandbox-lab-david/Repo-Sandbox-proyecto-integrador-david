@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Estudiante;
 
 use App\Http\Controllers\Controller;
+use App\Services\Archivos\FirmadosTemporales;
 use App\Services\Archivos\RespaldosTemporales;
 use App\Services\Solicitudes\BorradoresTemporales;
 use App\Services\Solicitudes\TramitesSimulados;
@@ -45,6 +46,7 @@ class SolicitudController extends Controller
         TramitesSimulados $tramites,
         RespaldosTemporales $respaldos,
         BorradoresTemporales $borradores,
+        FirmadosTemporales $firmados,
     ): View {
         $codigoTramite = (string) ($request->route('tramite') ?? $request->query('tramite'));
         $tramite = $tramites->buscar($codigoTramite);
@@ -57,6 +59,7 @@ class SolicitudController extends Controller
             'materias' => $tramites->materias(),
             'respaldosSubidos' => $respaldos->delTramite($codigoTramite),
             'borrador' => $borradores->buscar($codigoTramite),
+            'firmado' => $firmados->delTramite($codigoTramite),
         ]);
     }
 }
