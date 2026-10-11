@@ -8,10 +8,10 @@ use App\Services\Archivos\RespaldosTemporales;
 use App\Services\Solicitudes\BorradoresTemporales;
 use App\Services\Solicitudes\TramitesSimulados;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\Estudiante\GuardarBorradorRequest;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
-use Illuminate\Validation\Rule;
+
 
 /**
  * Borrador del formulario mientras la solicitud todavía no existe (RF-2.12).
@@ -25,25 +25,13 @@ class BorradorTemporalController extends Controller
         private readonly FirmadosTemporales $firmados,
     ) {}
 
-    public function update(Request $request, string $tramite): JsonResponse
+    public function update(GuardarBorradorRequest $request, string $tramite): JsonResponse
     {
         $definicion = $this->tramites->buscar($tramite);
 
         abort_if($definicion === null, 404);
 
-        // Un borrador puede estar incompleto: aquí solo se limita qué se guarda y cuánto ocupa.
-        $datos = $request->validate([
-            'paso' => ['required', 'integer', 'between:1,4'],
-            'celular' => ['nullable', 'string', 'max:20'],
-            'materias' => ['array', 'max:'.$definicion['max_materias']],
-            'materias.*.id' => ['required', 'distinct', Rule::in(array_column($this->tramites->materias(), 'id'))],
-            'materias.*.datos' => ['array'],
-            'materias.*.datos.*' => ['nullable', 'string', 'max:2000'],
-            'campos' => ['array'],
-            'campos.*' => ['nullable', 'string', 'max:2000'],
-            'requisitos' => ['array'],
-            'requisitos.*' => ['nullable', Rule::in(array_column($definicion['documentos'], 'id'))],
-        ]);
+        $datos = $request->validated();
 
         $camposMateria = array_column($definicion['campos_materia'], 'nombre');
 

@@ -542,8 +542,12 @@
                                 <label for="celular">Celular</label>
                                 <input id="celular" name="celular" type="tel"
                                     autocomplete="tel"
+                                    inputmode="numeric"
+                                    pattern="[0-9]+"
+                                    title="Ingresa únicamente números."
                                     placeholder="Ingresa tu número de contacto"
-                                    required maxlength="20">
+                                    required maxlength="20"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             </div>
                         </div>
 
@@ -1693,6 +1697,20 @@
             cancelarGuardado();
 
             const respuesta = await enCola(() => enviarBorrador());
+
+            if (respuesta?.status === 422) {
+                const detalle = await respuesta.json().catch(() => null);
+                const errores = Object.values(detalle?.errors ?? {}).flat();
+
+                const mensaje = errores[0]
+                    || detalle?.message
+                    || 'Revisa los datos ingresados.';
+
+                estadoBorrador.textContent =
+                    `No se guardaron los últimos cambios: ${mensaje}`;
+
+                return;
+            }
 
             if (!respuesta?.ok) {
                 estadoBorrador.textContent = respuesta?.status === 419
