@@ -129,6 +129,13 @@ Route::get(
     [SolicitudController::class, 'create']
 )->name('solicitudes.create');
 
+// «Mis solicitudes» y el seguimiento de cada una (RF-2.13).
+Route::get('/estudiante/solicitudes', [SolicitudController::class, 'index'])
+    ->name('solicitudes.index');
+
+Route::get('/estudiante/solicitudes/{solicitud}', [SolicitudController::class, 'show'])
+    ->whereNumber('solicitud')->name('solicitudes.show');
+
 // Respaldos del paso 3 mientras la solicitud todavía no existe: carpeta temporal de la sesión.
 Route::post('/estudiante/respaldos-temporales', [RespaldoTemporalController::class, 'store'])
     ->middleware('throttle:60,1')->name('respaldos-temporales.store');

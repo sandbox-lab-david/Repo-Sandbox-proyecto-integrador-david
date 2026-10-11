@@ -304,9 +304,31 @@
                 line-height: 1.5;
             }
 
+            .enlace-solicitudes {
+                margin-left: auto;
+                color: #781c35;
+                font-size: 14px;
+                font-weight: bold;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+
+            .enlace-solicitudes:hover {
+                text-decoration: underline;
+            }
+
+            .enlace-solicitudes:focus-visible {
+                outline: 3px solid #d9b2bd;
+                outline-offset: 4px;
+            }
+
             @media (max-width: 600px) {
                 header.encabezado-portal {
                     padding: 16px;
+                }
+
+                .marca-portal {
+                    flex-wrap: wrap;
                 }
 
                 .marca-portal {
@@ -686,6 +708,10 @@
             <strong>Portal del estudiante</strong>
             <span>Tus solicitudes académicas, en un solo lugar</span>
         </div>
+
+        <a class="enlace-solicitudes" href="{{ route('solicitudes.index') }}">
+            Mis solicitudes
+        </a>
     </div>
 </header>
 

@@ -6,13 +6,50 @@ use App\Http\Controllers\Controller;
 use App\Services\Archivos\FirmadosTemporales;
 use App\Services\Archivos\RespaldosTemporales;
 use App\Services\Solicitudes\BorradoresTemporales;
+use App\Services\Solicitudes\SeguimientoSolicitudes;
+use App\Services\Solicitudes\SolicitudesSinTerminar;
+use App\Services\Solicitudes\SolicitudService;
 use App\Services\Solicitudes\TramitesSimulados;
 use App\Services\Solicitudes\DocumentoRecuperacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class SolicitudController extends Controller
 {
+    /**
+     * «Mis solicitudes» (RF-2.13). Hoy lista lo que la sesión tiene sin
+     * terminar; las guardadas aparecen cuando G1 y G3 publiquen sus servicios.
+     */
+    public function index(SolicitudesSinTerminar $sinTerminar): View
+    {
+        return view('estudiante.mis-solicitudes', [
+            'sinTerminar' => $sinTerminar->todas(),
+            // null: el seguimiento todavía no se puede consultar y la vista lo dice.
+            'solicitudes' => SeguimientoSolicitudes::disponible()
+                ? app(SeguimientoSolicitudes::class)->delEstudianteActual()
+                : null,
+        ]);
+    }
+
+    /**
+     * Seguimiento de una solicitud guardada: estado, línea de tiempo,
+     * observaciones y resolución final.
+     */
+    public function show(int $solicitud, SolicitudService $solicitudes): View
+    {
+        abort_unless(SeguimientoSolicitudes::disponible(), 404);
+
+        $expediente = $solicitudes->detalle($solicitud);
+
+        Gate::authorize('view', $expediente);
+
+        return view('estudiante.solicitud', [
+            'solicitud' => $expediente,
+            'observaciones' => app(SeguimientoSolicitudes::class)->observaciones($expediente),
+        ]);
+    }
+
     public function documento(Request $request, TramitesSimulados $tramites, DocumentoRecuperacion $documentos)
     {
         $datos = $request->validate([
