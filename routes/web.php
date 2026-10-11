@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CursoController;
+use App\Http\Controllers\DirectorCarreraController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ImportacionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,3 +37,13 @@ Route::get('/materias', function () {
 Route::get('/paralelos', function () {
     return view('administracion.paralelos');
 })->name('administracion.paralelos');
+
+Route::resource('cursos', CursoController::class);
+
+Route::resource('users', UserController::class);
+
+Route::resource('directores_carrera', DirectorCarreraController::class);
+
+Route::resource('importaciones', ImportacionController::class)->only(['index', 'show', 'destroy']);
+
+
