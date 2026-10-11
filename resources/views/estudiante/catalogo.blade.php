@@ -418,6 +418,84 @@
                     }
                 }
 
+                /* Solicitudes sin terminar (borradores de la sesión) */
+                .borradores {
+                    padding: 22px;
+                    margin-bottom: 22px;
+                    background: white;
+                    border: 1px solid #eadce1;
+                    border-left: 4px solid #781c35;
+                    border-radius: 14px;
+                }
+
+                .borradores h2 {
+                    margin: 0;
+                    font-size: 18px;
+                }
+
+                .borradores ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 8px 0 0;
+                }
+
+                .borradores li {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 16px;
+                    padding: 14px 0;
+                    border-bottom: 1px solid #e0e4eb;
+                }
+
+                .borradores li strong {
+                    display: block;
+                    margin-bottom: 4px;
+                    font-size: 15px;
+                }
+
+                .borradores li span,
+                .borradores p {
+                    color: #596579;
+                    font-size: 13px;
+                    line-height: 1.5;
+                }
+
+                .borradores li a {
+                    flex-shrink: 0;
+                    padding: 10px 16px;
+                    border-radius: 9px;
+                    background: #781c35;
+                    color: white;
+                    font-size: 14px;
+                    font-weight: bold;
+                    text-decoration: none;
+                }
+
+                .borradores li a:hover {
+                    background: #5d1529;
+                }
+
+                .borradores li a:focus-visible {
+                    outline: 3px solid #d9b2bd;
+                    outline-offset: 3px;
+                }
+
+                .borradores p {
+                    margin: 14px 0 0;
+                }
+
+                @media (max-width: 600px) {
+                    .borradores {
+                        padding: 20px;
+                    }
+
+                    .borradores li {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+                }
+
                 /* Diseño de las tarjetas del catálogo */
                 #tarjetas {
                     display: grid;
@@ -627,6 +705,36 @@
             </span>
         </section>
 
+        @if ($borradores)
+            <section class="borradores" aria-labelledby="titulo-borradores">
+                <h2 id="titulo-borradores">Tienes solicitudes sin terminar</h2>
+
+                <ul>
+                    @foreach ($borradores as $borrador)
+                        <li>
+                            <div>
+                                <strong>{{ $borrador['nombre'] }}</strong>
+                                <span>
+                                    Paso {{ $borrador['paso'] }} de 4<time
+                                        datetime="{{ $borrador['guardado_at'] }}" data-guardado></time>
+                                </span>
+                            </div>
+
+                            <a href="{{ route('solicitudes.create', ['tramite' => $borrador['codigo']]) }}"
+                                aria-label="Continuar la solicitud de {{ $borrador['nombre'] }}">
+                                Continuar →
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+
+                <p>
+                    Los borradores se conservan en este navegador
+                    mientras tu sesión siga abierta.
+                </p>
+            </section>
+        @endif
+
         <section class="filtros-catalogo" aria-label="Buscar y filtrar trámites">
             <div class="controles">
                 <div>
@@ -670,6 +778,16 @@
     </main>
 
     <script>
+
+        // Borradores: la hora de guardado se muestra en la hora local del navegador.
+        document.querySelectorAll('time[data-guardado]').forEach(marca => {
+            const fecha = new Date(marca.dateTime);
+            const hora = fecha.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+            marca.textContent = fecha.toDateString() === new Date().toDateString()
+                ? ` · guardado hoy a las ${hora}`
+                : ` · guardado el ${fecha.toLocaleDateString('es-EC')} a las ${hora}`;
+        });
 
         const fichas = {
             'Examen de recuperación':

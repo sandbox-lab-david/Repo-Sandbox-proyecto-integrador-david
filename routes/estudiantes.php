@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Estudiante\ArchivoController;
+use App\Http\Controllers\Estudiante\BorradorTemporalController;
+use App\Http\Controllers\Estudiante\CatalogoController;
 use App\Http\Controllers\Estudiante\RespaldoTemporalController;
 use App\Http\Controllers\Estudiante\SolicitudController;
 use Illuminate\Support\Facades\Route;
@@ -8,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/estudiante/solicitudes/documento', [SolicitudController::class, 'documento'])
     ->middleware('throttle:10,1')->name('solicitudes.documento');
 
-Route::view('/estudiante/tramites', 'estudiante.catalogo')
+Route::get('/estudiante/tramites', [CatalogoController::class, 'index'])
     ->name('estudiante.catalogo');
 
 Route::view(
@@ -135,6 +137,13 @@ Route::get('/estudiante/respaldos-temporales/{id}', [RespaldoTemporalController:
 
 Route::delete('/estudiante/respaldos-temporales/{id}', [RespaldoTemporalController::class, 'destroy'])
     ->whereUuid('id')->name('respaldos-temporales.destroy');
+
+// Borrador del formulario mientras la solicitud todavía no existe: uno por trámite, en la sesión.
+Route::put('/estudiante/borradores-temporales/{tramite}', [BorradorTemporalController::class, 'update'])
+    ->where('tramite', '[a-z0-9_-]+')->middleware('throttle:60,1')->name('borradores-temporales.update');
+
+Route::delete('/estudiante/borradores-temporales/{tramite}', [BorradorTemporalController::class, 'destroy'])
+    ->where('tramite', '[a-z0-9_-]+')->name('borradores-temporales.destroy');
 
 // Archivos privados con enlace firmado (ArchivoService::urlTemporal y <x-visor-documento>).
 Route::get('/archivos/ver', [ArchivoController::class, 'ver'])

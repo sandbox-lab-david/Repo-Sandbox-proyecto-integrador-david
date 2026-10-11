@@ -99,6 +99,23 @@
 
         .activo .numero { background: #781c35; color: white; }
 
+        .barra-borrador {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px 16px;
+            margin-bottom: 24px;
+            padding: 10px 18px;
+            background: white;
+            border: 1px solid #e0e4eb;
+            border-radius: 10px;
+        }
+
+        .barra-borrador p { margin: 0; color: #596579; font-size: 14px; }
+        .barra-borrador div { display: flex; align-items: center; gap: 16px; }
+        .barra-borrador .secundario { padding: 10px 16px; }
+
         .distribucion {
             display: grid;
             grid-template-columns: minmax(0, 1fr) 290px;
@@ -393,8 +410,9 @@
 
         <div class="aviso">
             Vista de demostración con un perfil y materias ficticias.
-            Usa datos de prueba. La solicitud todavía no se guarda ni se envía;
-            al recargar la página se perderá lo escrito.
+            Usa datos de prueba. La solicitud todavía no se envía; lo que
+            escribas queda como borrador en este navegador mientras tu
+            sesión siga abierta.
         </div>
 
         <ol class="pasos" aria-label="Pasos de la solicitud">
@@ -411,6 +429,22 @@
                 <span class="numero">4</span><span>Revisar</span>
             </li>
         </ol>
+
+        <div class="barra-borrador">
+            <p id="estado-borrador" role="status">
+                Lo que escribas se guardará como borrador.
+            </p>
+
+            <div>
+                <button id="descartar-borrador" class="enlace" type="button" hidden>
+                    Descartar borrador
+                </button>
+
+                <button id="guardar-borrador" class="secundario" type="button">
+                    Guardar borrador
+                </button>
+            </div>
+        </div>
 
         <div class="distribucion">
             <div>
@@ -623,11 +657,6 @@
                             Continuar a respaldos →
                         </button>
                     </div>
-
-                    <p class="ayuda">
-                        El guardado de borradores estará disponible
-                        en una siguiente entrega.
-                    </p>
                 </section>
 
                 <section id="paso-3" class="panel"
@@ -789,6 +818,25 @@
         const tramite = @json($tramite);
         const materias = @json($materias);
 
+        // Borrador (RF-2.12): lo escrito se guarda en la sesión, uno por trámite.
+        const borrador = @json($borrador);
+        const urlBorrador = @json(route('borradores-temporales.update', $codigoTramite));
+        const estadoBorrador = document.getElementById('estado-borrador');
+        const botonDescartar = document.getElementById('descartar-borrador');
+        let pasoActual = 1;
+        let temporizadorBorrador = null;
+
+        // Las peticiones que escriben en la sesión van de una en una:
+        // dos a la vez se pisarían lo guardado.
+        let colaSesion = Promise.resolve();
+
+        function enCola(peticion) {
+            const resultado = colaSesion.then(peticion);
+            colaSesion = resultado.catch(() => null);
+
+            return resultado;
+        }
+
         const formularioDatos = document.getElementById('formulario-datos');
         const pasos = document.querySelectorAll('.pasos li');
 
@@ -807,6 +855,9 @@
         ];
 
         function mostrarPaso(numero) {
+            const cambio = numero !== pasoActual;
+            pasoActual = numero;
+
             [1, 2, 3, 4].forEach(paso => {
                 document.getElementById(`paso-${paso}`).hidden = numero !== paso;
             });
@@ -823,6 +874,8 @@
             });
 
             document.getElementById(titulosPaso[numero - 1]).focus();
+
+            if (cambio) programarGuardado();
         }
 
         formularioDatos.addEventListener('submit', evento => {
@@ -905,6 +958,7 @@
                 quitar.addEventListener('click', () => {
                     elegidas.splice(indice, 1);
                     pintarMaterias();
+                    programarGuardado();
                     document.getElementById('materia').focus();
                 });
 
@@ -968,6 +1022,7 @@
                     selector.value = '';
                     errorMaterias.textContent = '';
                     pintarMaterias();
+                    programarGuardado();
                 });
         }
 
@@ -1034,7 +1089,10 @@
 
         // Lo que ya está en el servidor, en la carpeta temporal de esta sesión.
         const archivos = @json($respaldosSubidos)
-            .map(respaldo => ({ ...respaldo, requisito: '' }));
+            .map(respaldo => ({
+                ...respaldo,
+                requisito: borrador?.requisitos[respaldo.id] ?? ''
+            }));
 
         const entradaArchivos = document.getElementById('archivos');
         const listaArchivos = document.getElementById('lista-archivos');
@@ -1091,10 +1149,10 @@
         }
 
         async function quitarRespaldo(item) {
-            const respuesta = await fetch(`${urlRespaldos}/${item.id}`, {
+            const respuesta = await enCola(() => fetch(`${urlRespaldos}/${item.id}`, {
                 method: 'DELETE',
                 headers: cabecerasRespaldos
-            }).catch(() => null);
+            }).catch(() => null));
 
             if (!respuesta?.ok) {
                 errorArchivos.textContent =
@@ -1104,6 +1162,7 @@
 
             archivos.splice(archivos.indexOf(item), 1);
             errorArchivos.textContent = '';
+            programarGuardado();
             return true;
         }
 
@@ -1184,11 +1243,11 @@
             datos.append('tramite', @json($codigoTramite));
             datos.append('archivo', archivo);
 
-            const respuesta = await fetch(urlRespaldos, {
+            const respuesta = await enCola(() => fetch(urlRespaldos, {
                 method: 'POST',
                 headers: cabecerasRespaldos,
                 body: datos
-            }).catch(() => null);
+            }).catch(() => null));
 
             if (respuesta?.ok) return respuesta.json();
 
@@ -1248,6 +1307,7 @@
                 entradaArchivos.disabled = false;
                 estadoArchivos.textContent = '';
                 errorArchivos.textContent = fallidos.join(' ');
+                programarGuardado();
             });
 
         document.getElementById('cerrar-visor')
@@ -1411,6 +1471,167 @@
                     'Cuando el sistema esté conectado, aquí se generará ' +
                     'tu código de solicitud y el documento oficial para firmar.';
             });
+
+        // Borrador: guardar, descartar y retomar.
+        function cuandoSeGuardo(iso) {
+            const fecha = new Date(iso);
+            const hora = fecha.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+            return fecha.toDateString() === new Date().toDateString()
+                ? `hoy a las ${hora}`
+                : `el ${fecha.toLocaleDateString('es-EC')} a las ${hora}`;
+        }
+
+        // Las casillas de confirmación no se guardan: se marcan en cada visita.
+        function datosBorrador() {
+            const campos = {};
+            const requisitos = {};
+
+            tramite.campos.forEach(definicion => {
+                campos[definicion.nombre] =
+                    document.getElementById(`campo-${definicion.nombre}`).value;
+            });
+
+            archivos.forEach(item => {
+                requisitos[item.id] = item.requisito;
+            });
+
+            return {
+                paso: pasoActual,
+                celular: document.getElementById('celular').value,
+                materias: elegidas.map(materia => ({ id: materia.id, datos: materia.datos })),
+                campos,
+                requisitos
+            };
+        }
+
+        function enviarBorrador(opciones = {}) {
+            return fetch(urlBorrador, {
+                method: 'PUT',
+                headers: { ...cabecerasRespaldos, 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosBorrador()),
+                ...opciones
+            }).catch(() => null);
+        }
+
+        function cancelarGuardado() {
+            clearTimeout(temporizadorBorrador);
+            temporizadorBorrador = null;
+        }
+
+        function programarGuardado() {
+            cancelarGuardado();
+            temporizadorBorrador = setTimeout(guardarBorrador, 1500);
+        }
+
+        async function guardarBorrador() {
+            cancelarGuardado();
+
+            const respuesta = await enCola(() => enviarBorrador());
+
+            if (!respuesta?.ok) {
+                estadoBorrador.textContent = respuesta?.status === 419
+                    ? 'Tu sesión expiró y el borrador no se guardó. Recarga la página.'
+                    : 'No se pudo guardar el borrador. Se intentará de nuevo con tu próximo cambio.';
+                return;
+            }
+
+            const guardado = await respuesta.json();
+            estadoBorrador.textContent = `Borrador guardado ${cuandoSeGuardo(guardado.guardado_at)}.`;
+            botonDescartar.hidden = false;
+        }
+
+        const contenido = document.querySelector('.distribucion');
+        contenido.addEventListener('input', programarGuardado);
+        contenido.addEventListener('change', programarGuardado);
+
+        document.getElementById('guardar-borrador')
+            .addEventListener('click', guardarBorrador);
+
+        // Si quedó un cambio sin guardar al salir de la página, se envía en ese momento.
+        window.addEventListener('pagehide', () => {
+            if (temporizadorBorrador !== null) {
+                enviarBorrador({ keepalive: true });
+            }
+        });
+
+        botonDescartar.addEventListener('click', async () => {
+            if (!confirm('¿Descartar este borrador? Se borrará lo que escribiste y los archivos que adjuntaste.')) {
+                return;
+            }
+
+            cancelarGuardado();
+
+            const respuesta = await enCola(() => fetch(urlBorrador, {
+                method: 'DELETE',
+                headers: cabecerasRespaldos
+            }).catch(() => null));
+
+            if (!respuesta?.ok) {
+                estadoBorrador.textContent = 'No se pudo descartar el borrador. Inténtalo de nuevo.';
+                return;
+            }
+
+            cancelarGuardado();
+            formularioDatos.reset();
+            document.getElementById('declaracion').checked = false;
+            document.querySelectorAll(
+                '#campos-tramite input, #campos-tramite select, #campos-tramite textarea'
+            ).forEach(control => {
+                control.value = '';
+            });
+            actualizarCondicionales();
+
+            elegidas.length = 0;
+            archivos.length = 0;
+
+            if (tramite.max_materias > 0) {
+                errorMaterias.textContent = '';
+                pintarMaterias();
+            }
+
+            errorArchivos.textContent = '';
+            pintarArchivos();
+
+            pasoActual = 1;
+            mostrarPaso(1);
+            botonDescartar.hidden = true;
+            estadoBorrador.textContent = 'Borrador descartado.';
+        });
+
+        if (borrador) {
+            document.getElementById('celular').value = borrador.celular ?? '';
+            document.getElementById('confirmar-datos').checked = borrador.paso > 1;
+
+            tramite.campos.forEach(definicion => {
+                document.getElementById(`campo-${definicion.nombre}`).value =
+                    borrador.campos[definicion.nombre] ?? '';
+            });
+            actualizarCondicionales();
+
+            borrador.materias.forEach(guardada => {
+                const materia = materias.find(item => item.id === guardada.id);
+
+                if (materia) {
+                    elegidas.push({ ...materia, datos: { ...guardada.datos } });
+                }
+            });
+
+            if (tramite.max_materias > 0) {
+                pintarMaterias();
+            }
+
+            // El paso 4 se vuelve a armar al pasar por la validación del paso 3.
+            pasoActual = Math.min(borrador.paso, 3);
+
+            if (pasoActual > 1) {
+                mostrarPaso(pasoActual);
+            }
+
+            estadoBorrador.textContent =
+                `Recuperamos tu borrador, guardado ${cuandoSeGuardo(borrador.guardado_at)}.`;
+            botonDescartar.hidden = false;
+        }
 
         pintarArchivos();
     </script>
